@@ -35,7 +35,6 @@ export default function TabLayout() {
         }}
       />
 
-      {/* Центральная кнопка */}
       <Tabs.Screen
         name="add"
         options={{

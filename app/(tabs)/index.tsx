@@ -1,7 +1,3 @@
-import ExpenseCard from '@/components/Home/ExpenseCard';
-import MonthCategoryCard from '@/components/Home/MonthCategoryCard';
-import MonthCategoryText from '@/components/Home/MonthCategoryText';
-import RecentExpenseText from '@/components/Home/RecentExpenseText';
 import MonthCategory from '@/components/Home/sections/MonthCategory';
 import RecentExpense from '@/components/Home/sections/RecentExpense';
 import SpentToday from '@/components/Home/sections/SpentToday';
@@ -30,12 +26,13 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
+    paddingBottom: '30%',
   },
-  contentContainer: {
-    paddingBottom: 20, // Отступ внизу, чтобы последний элемент не перекрывался
-  },
+
   mainContainer: {
     paddingHorizontal: '5%',
   },
-  monthContainer: {},
+  monthContainer: {
+    paddingHorizontal: '5%',
+  },
 });

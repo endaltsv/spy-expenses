@@ -1,34 +1,79 @@
 import formattingNumber from '@/utils/FormattingNumber';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
+import { SvgUri } from 'react-native-svg'; // Импортируем SVG компонент
+import { categoryIcons } from '@/utils/iconPaths'; // Импортируем объект с путями иконок
 
 interface ExpenseCardProps {
   expenseName: string;
   expenseAmount: number;
   expenseDate: string;
+  expenseCategory: string;
 }
 
 export default function ExpenseCard({
   expenseName,
   expenseAmount,
   expenseDate,
+  expenseCategory,
 }: ExpenseCardProps) {
   const formattedAmount = formattingNumber(expenseAmount);
+
+  const translateX = useSharedValue(0);
+  const backgroundColor = useSharedValue('#ededed');
+
+  const swipeGesture = Gesture.Pan()
+    .onUpdate((event) => {
+      if (event.translationX < 0) {
+        translateX.value = event.translationX;
+        if (event.translationX < -70) {
+          backgroundColor.value = '#ff4d4d';
+        } else {
+          backgroundColor.value = '#ededed';
+        }
+      }
+    })
+    .onEnd(() => {
+      translateX.value = withSpring(0);
+      backgroundColor.value = '#ededed';
+    });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }],
+    backgroundColor: backgroundColor.value,
+  }));
+
+  console.log(expenseCategory);
+  const iconUri =
+    categoryIcons[expenseCategory] || '../../assets/images/plus.svg';
+
+  console.log(iconUri);
   return (
-    <View style={styles.card}>
-      <View style={styles.iconContainer}>
-        <Image
-          source={require('../../assets/images/circle.png')}
-          style={styles.icon}
-        />
-      </View>
-      <View style={styles.textContainer}>
-        <Text style={styles.expenseName}>{expenseName}</Text>
-        <Text style={styles.expenseDate}>{expenseDate}</Text>
-      </View>
-      <View>
-        <Text style={styles.expenseAmount}>- ₽{formattedAmount}</Text>
-      </View>
-    </View>
+    <GestureDetector gesture={swipeGesture}>
+      <Animated.View style={[styles.card, animatedStyle]}>
+        <View style={styles.iconContainer}>
+          <View style={styles.iconBackground}>
+            <SvgUri
+              uri={iconUri} // Укажи URL на иконку или используй локальный SVG
+              width={24}
+              height={24}
+            />
+          </View>
+        </View>
+        <View style={styles.textContainer}>
+          <Text style={styles.expenseName}>{expenseName}</Text>
+          <Text style={styles.expenseDate}>{expenseDate}</Text>
+        </View>
+        <View>
+          <Text style={styles.expenseAmount}>- ₽{formattedAmount}</Text>
+        </View>
+      </Animated.View>
+    </GestureDetector>
   );
 }
 
@@ -44,13 +89,15 @@ const styles = StyleSheet.create({
   iconContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
-    borderRadius: 20,
     marginRight: 12,
   },
-  icon: {
+  iconBackground: {
     width: 44,
     height: 44,
+    borderRadius: 22, // делаем круг
+    backgroundColor: '#ffffff', // белый цвет
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   textContainer: {
     flex: 1,
