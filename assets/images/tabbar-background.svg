@@ -1,0 +1,5 @@
+<svg width="100%" height="80" viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0,0 h100 v15 a5,5 0 0 1 -5,5 h-90 a5,5 0 0 1 -5,-5 z" fill="#ededed"/>
+  <!-- Эта линия создает вырез под центральную кнопку -->
+  <circle cx="50" cy="10" r="10" fill="white"/>
+</svg>
