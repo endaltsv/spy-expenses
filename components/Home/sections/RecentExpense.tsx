@@ -35,6 +35,13 @@ export default function RecentExpense() {
     },
   ]);
 
+  // Функция для удаления элемента из массива
+  const handleDelete = (id: number) => {
+    setExpenses((prevExpenses) =>
+      prevExpenses.filter((expense) => expense.id !== id),
+    );
+  };
+
   return (
     <>
       <RecentExpenseText />
@@ -45,6 +52,7 @@ export default function RecentExpense() {
           expenseAmount={expense.amount}
           expenseDate={expense.date}
           expenseCategory={expense.category}
+          onDelete={() => handleDelete(expense.id)} // Передаем onDelete в каждый ExpenseCard
         />
       ))}
     </>

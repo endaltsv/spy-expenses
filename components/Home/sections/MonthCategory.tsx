@@ -4,7 +4,7 @@ import MonthCategoryCard from '../MonthCategoryCard';
 
 const { width } = Dimensions.get('window');
 const cardWidth = 176;
-const cardSpacing = 16;
+const cardSpacing = 8;
 
 export default function MonthCategory() {
   const categories = [

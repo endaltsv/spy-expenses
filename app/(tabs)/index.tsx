@@ -14,8 +14,6 @@ export default function HomeScreen() {
         <View style={styles.mainContainer}>
           <SpentToday amount={totalExpenses} />
           <RecentExpense />
-        </View>
-        <View style={styles.monthContainer}>
           <MonthCategory />
         </View>
       </View>

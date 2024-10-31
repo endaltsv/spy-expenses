@@ -1,19 +1,29 @@
 import formattingNumber from '@/utils/FormattingNumber';
-import { View, Text, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  useWindowDimensions,
+  TouchableOpacity,
+} from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
+  withTiming,
+  runOnJS,
 } from 'react-native-reanimated';
-import { SvgUri } from 'react-native-svg'; // Импортируем SVG компонент
-import { categoryIcons } from '@/utils/iconPaths'; // Импортируем объект с путями иконок
+import { SvgUri } from 'react-native-svg';
+import { categoryIcons } from '@/utils/iconPaths';
+import { useState } from 'react';
 
 interface ExpenseCardProps {
   expenseName: string;
   expenseAmount: number;
   expenseDate: string;
   expenseCategory: string;
+  onDelete: () => void;
 }
 
 export default function ExpenseCard({
@@ -21,70 +31,120 @@ export default function ExpenseCard({
   expenseAmount,
   expenseDate,
   expenseCategory,
+  onDelete,
 }: ExpenseCardProps) {
+  const { width } = useWindowDimensions();
   const formattedAmount = formattingNumber(expenseAmount);
 
   const translateX = useSharedValue(0);
-  const backgroundColor = useSharedValue('#ededed');
+  const [showDeleteIcon, setShowDeleteIcon] = useState(false);
 
   const swipeGesture = Gesture.Pan()
     .onUpdate((event) => {
-      if (event.translationX < 0) {
-        translateX.value = event.translationX;
-        if (event.translationX < -70) {
-          backgroundColor.value = '#ff4d4d';
-        } else {
-          backgroundColor.value = '#ededed';
-        }
+      const translation = event.translationX;
+      translateX.value = translation;
+
+      // Показываем крестик при свайпе более 20% ширины экрана
+      if (translation < -width * 0.2) {
+        runOnJS(setShowDeleteIcon)(true);
+      } else {
+        runOnJS(setShowDeleteIcon)(false);
       }
     })
     .onEnd(() => {
-      translateX.value = withSpring(0);
-      backgroundColor.value = '#ededed';
+      if (translateX.value < -width * 0.6) {
+        // Если свайп более 60%, удаляем карточку
+        translateX.value = withTiming(-width, { duration: 200 }, () => {
+          runOnJS(onDelete)();
+        });
+      } else if (showDeleteIcon) {
+        // Если свайп меньше 60%, но крестик показан, оставляем карточку на месте крестика
+        translateX.value = withSpring(-width * 0.2);
+      } else {
+        // Возвращаем карточку в исходное положение
+        translateX.value = withSpring(0);
+      }
     });
+
+  const handleDelete = () => {
+    // Удаляем карточку при нажатии на крестик
+    translateX.value = withTiming(-width, { duration: 200 }, () => {
+      runOnJS(onDelete)();
+    });
+  };
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
-    backgroundColor: backgroundColor.value,
   }));
 
-  console.log(expenseCategory);
   const iconUri =
     categoryIcons[expenseCategory] || '../../assets/images/plus.svg';
 
-  console.log(iconUri);
   return (
-    <GestureDetector gesture={swipeGesture}>
-      <Animated.View style={[styles.card, animatedStyle]}>
-        <View style={styles.iconContainer}>
-          <View style={styles.iconBackground}>
-            <SvgUri
-              uri={iconUri} // Укажи URL на иконку или используй локальный SVG
-              width={24}
-              height={24}
-            />
+    <View style={styles.container}>
+      {/* Фоновый слой с крестиком */}
+      {showDeleteIcon && (
+        <View style={[styles.deleteBackground]}>
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={handleDelete}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.deleteButtonText}>✕</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      {/* Слой с карточкой */}
+      <GestureDetector gesture={swipeGesture}>
+        <Animated.View style={[styles.card, animatedStyle]}>
+          <View style={styles.iconContainer}>
+            <View style={styles.iconBackground}>
+              <SvgUri uri={iconUri} width={24} height={24} />
+            </View>
           </View>
-        </View>
-        <View style={styles.textContainer}>
-          <Text style={styles.expenseName}>{expenseName}</Text>
-          <Text style={styles.expenseDate}>{expenseDate}</Text>
-        </View>
-        <View>
-          <Text style={styles.expenseAmount}>- ₽{formattedAmount}</Text>
-        </View>
-      </Animated.View>
-    </GestureDetector>
+          <View style={styles.textContainer}>
+            <Text style={styles.expenseName}>{expenseName}</Text>
+            <Text style={styles.expenseDate}>{expenseDate}</Text>
+          </View>
+          <View>
+            <Text style={styles.expenseAmount}>- ₽{formattedAmount}</Text>
+          </View>
+        </Animated.View>
+      </GestureDetector>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    overflow: 'hidden',
+    position: 'relative',
+    marginVertical: 4,
+  },
+  deleteBackground: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 14,
+    backgroundColor: '#ffdddd',
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    paddingRight: 20,
+  },
+  deleteButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 44,
+  },
+  deleteButtonText: {
+    fontSize: 24,
+    color: '#ff4d4d',
+  },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#ededed',
     paddingHorizontal: 16,
+    height: 72,
     borderRadius: 14,
-    marginVertical: 8,
   },
   iconContainer: {
     justifyContent: 'center',
@@ -94,14 +154,13 @@ const styles = StyleSheet.create({
   iconBackground: {
     width: 44,
     height: 44,
-    borderRadius: 22, // делаем круг
-    backgroundColor: '#ffffff', // белый цвет
+    borderRadius: 22,
+    backgroundColor: '#ffffff',
     justifyContent: 'center',
     alignItems: 'center',
   },
   textContainer: {
     flex: 1,
-    paddingVertical: 16,
   },
   expenseName: {
     fontFamily: 'SFPro-Bold',

@@ -11,10 +11,10 @@ export default function RecentExpenseText() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 8,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 8,
   },
   title: {
     fontSize: 20,

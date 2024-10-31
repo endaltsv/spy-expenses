@@ -18,7 +18,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
 
-    marginVertical: 16,
+    marginTop: 32,
+    marginBottom: 12,
   },
   title: {
     fontSize: 20,
