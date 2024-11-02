@@ -33,6 +33,10 @@ export default function ExpenseCard({
   expenseCategory,
   onDelete,
 }: ExpenseCardProps) {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
   const { width } = useWindowDimensions();
   const formattedAmount = formattingNumber(expenseAmount);
 

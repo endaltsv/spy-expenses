@@ -1,7 +1,6 @@
 import ExpenseCard from '../ExpenseCard';
 import RecentExpenseText from '../RecentExpenseText';
 import { useState } from 'react';
-import { View } from 'react-native';
 
 export default function RecentExpense() {
   const [expenses, setExpenses] = useState([

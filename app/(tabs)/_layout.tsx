@@ -3,10 +3,9 @@ import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { AddButton } from '@/components/AddButton';
+import { AddButton } from '@/components/Home/addExpense/TabButton';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-// todo: Добавить стилизацию для TabBar
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
@@ -14,11 +13,11 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        tabBarInactiveTintColor: '#A0A0A0', // Цвет неактивных иконок
+        tabBarInactiveTintColor: '#A0A0A0',
         tabBarShowLabel: true,
         headerShown: true,
         tabBarStyle: styles.tabBar,
-        tabBarLabelStyle: styles.tabBarLabel, // Добавляем стиль для надписи
+        tabBarLabelStyle: styles.tabBarLabel,
       }}
     >
       <Tabs.Screen
@@ -38,8 +37,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="add"
         options={{
-          tabBarButton: () => <AddButton />, // Центральная кнопка добавления
-          tabBarLabel: () => null, // Отключаем метку для центральной кнопки
+          tabBarButton: () => <AddButton />, // Оставляем кнопку без ссылки на отдельный экран
+          tabBarLabel: () => null,
         }}
       />
 
@@ -47,10 +46,6 @@ export default function TabLayout() {
         name="explore"
         options={{
           title: 'Анализ',
-          tabBarLabel: ({ color }) => <Text style={{ color }}>Анализ</Text>,
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="chart-bar" size={24} color={color} />
-          ),
         }}
       />
     </Tabs>
@@ -60,19 +55,15 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   tabBar: {
     position: 'absolute',
-    height: 80, // Уменьшенная высота TabBar
+    height: 80,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     backgroundColor: '#ededed',
     borderTopWidth: 0,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
     elevation: 10,
   },
   tabBarLabel: {
     fontSize: 12,
-    marginTop: -1, // Подтягиваем текст ближе к иконке
+    marginTop: -1,
   },
 });

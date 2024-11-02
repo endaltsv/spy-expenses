@@ -67,7 +67,6 @@ const styles = StyleSheet.create({
   plusIcon: {
     width: 11, // Задаем размер иконки плюсика
     height: 11,
-    resizeMode: 'contain', // Убедимся, что иконка вписывается в контейнер
   },
   alignedRight: {
     marginRight: 16, // Позиционирование плюсика на том же уровне, что и текст
