@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import AddExpenseModal from './Modal';
+import { useCategoriesContext } from '@/context/CategoriesContext';
 
 export function AddButton() {
   const [visible, setVisible] = useState(false);
@@ -23,6 +24,7 @@ export function AddButton() {
         <Image
           source={require('../../../assets/images/plus.svg')}
           style={styles.icon}
+          resizeMode="contain"
         />
       </TouchableOpacity>
       <AddExpenseModal visible={visible} toggleModal={toggleModal} />
@@ -47,6 +49,5 @@ const styles = StyleSheet.create({
   icon: {
     width: 24,
     height: 24,
-    resizeMode: 'contain',
   },
 });

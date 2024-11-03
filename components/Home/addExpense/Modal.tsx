@@ -4,15 +4,19 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  Modal,
   View,
   Text,
   TextInput,
   Platform,
   Keyboard,
   TouchableWithoutFeedback,
+  Alert,
 } from 'react-native';
+import Modal from 'react-native-modal';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useExpensesContext } from '@/context/ExpensesContext';
+import { useCategoriesContext } from '@/context/CategoriesContext';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface AddExpenseModalProps {
   visible: boolean;
@@ -23,17 +27,16 @@ export default function AddExpenseModal({
   visible,
   toggleModal,
 }: AddExpenseModalProps) {
-  const [date, setDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const { addExpense, getCategoryIdByName } = useExpensesContext();
+  const { categories } = useCategoriesContext();
+  console.log('CATEGORIES=', categories);
 
-  const categoryIcons: { [key: string]: any } = {
-    Еда: require('../../../assets/images/categories/food.svg'),
-    Транспорт: require('../../../assets/images/categories/transport.svg'),
-    Шоппинг: require('../../../assets/images/categories/shopping.svg'),
-    Транспорт2: require('../../../assets/images/categories/transport.svg'),
-    // Добавьте другие категории и их иконки
-  };
+  const [name, setName] = useState<string>('');
+  const [amount, setAmount] = useState<string>(''); // Храним сумму как строку для удобства ввода
+  const [date, setDate] = useState<Date>(new Date());
+  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [comment, setComment] = useState<string>('');
 
   const onChangeDate = (event: any, selectedDate?: Date) => {
     if (Platform.OS === 'android') {
@@ -50,27 +53,72 @@ export default function AddExpenseModal({
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
+  const handleAddExpense = () => {
+    console.log('handleAddExpense');
+
+    if (name.trim() === '' || amount.trim() === '' || !selectedCategory) {
+      Alert.alert('Ошибка', 'Пожалуйста, заполните все обязательные поля.');
+      return;
+    }
+    const parsedAmount = parseFloat(amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      Alert.alert('Ошибка', 'Пожалуйста, введите корректную сумму.');
+      return;
+    }
+
+    console.log(selectedCategory);
+    const newExpense = {
+      name: name.trim(),
+      amount: parsedAmount,
+      dateTime: date.toISOString(),
+      categoryId: selectedCategory,
+      comment: comment.trim() !== '' ? comment.trim() : undefined,
+    };
+    console.log(newExpense);
+
+    addExpense(newExpense);
+
+    setName('');
+    setAmount('');
+    setSelectedCategory(null);
+    setComment('');
+    setDate(new Date());
+
+    toggleModal();
+  };
+
   return (
     <Modal
-      visible={visible}
-      animationType="slide"
-      transparent={true}
-      onRequestClose={toggleModal}
+      isVisible={visible}
+      animationIn="slideInUp"
+      animationOut="slideOutDown"
+      animationInTiming={300}
+      animationOutTiming={300}
+      coverScreen={true}
+      style={styles.modalContainer}
+      hasBackdrop={true}
+      backdropColor="white"
+      backdropOpacity={0.1}
+      onBackdropPress={toggleModal}
+      onBackButtonPress={toggleModal}
+      swipeDirection="down"
+      onSwipeComplete={toggleModal}
+      swipeThreshold={150}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
+            <View style={styles.handle} />
+            {/* Визуальная индикация для свайпа */}
             {/* Close Button Positioned Above the Title */}
             <View style={styles.closeButtonContainer}>
               <TouchableOpacity onPress={toggleModal}>
                 <Text style={styles.closeButton}>✕</Text>
               </TouchableOpacity>
             </View>
-
             <View style={styles.header}>
               <Text style={styles.title}>Новая трата</Text>
             </View>
-
             <View style={styles.fieldContainer}>
               <Text style={styles.labelSum}>Сумма</Text>
               <TextInput
@@ -78,18 +126,20 @@ export default function AddExpenseModal({
                 placeholder="Введите сумму"
                 keyboardType="numeric"
                 placeholderTextColor="#a1a1a1"
+                value={amount}
+                onChangeText={setAmount}
               />
             </View>
-
             <View style={styles.fieldContainer}>
               <Text style={styles.label}>Название</Text>
               <TextInput
                 style={styles.input}
                 placeholder="Введите название"
                 placeholderTextColor="#a1a1a1"
+                value={name}
+                onChangeText={setName}
               />
             </View>
-
             <View style={styles.fieldContainer}>
               <Text style={styles.label}>Дата и время</Text>
               <TouchableOpacity
@@ -99,6 +149,7 @@ export default function AddExpenseModal({
                 <Image
                   source={require('../../../assets/images/calendar.svg')} // Убедитесь, что путь к изображению корректен
                   style={styles.calendarIcon}
+                  tintColor={'#a1a1a1'}
                 />
                 <Text style={styles.dateTimeText}>{formattedDate}</Text>
               </TouchableOpacity>
@@ -111,52 +162,63 @@ export default function AddExpenseModal({
                 />
               )}
             </View>
-
             <View style={styles.fieldContainer}>
               <Text style={styles.label}>Категория</Text>
               <View style={styles.categoryContainer}>
-                {Object.keys(categoryIcons).map((categoryKey) => (
+                {categories.map((category) => (
                   <TouchableOpacity
-                    key={categoryKey}
+                    key={category.id}
                     style={
-                      selectedCategory === categoryKey
+                      selectedCategory === category.id
                         ? styles.selectedCategoryButton
                         : styles.categoryButton
                     }
-                    onPress={() => setSelectedCategory(categoryKey)}
+                    onPress={() => setSelectedCategory(category.id)}
                   >
-                    <Image
-                      source={categoryIcons[categoryKey]}
+                    <MaterialCommunityIcons
+                      name={category.icon}
+                      size={16}
                       style={
-                        selectedCategory === categoryKey
+                        selectedCategory === category.id
                           ? styles.selectedCategoryIcon
                           : styles.categoryIcon
                       }
                     />
+                    {/* <Image
+                      source={{ uri: category.icon }}
+                      style={
+                        selectedCategory === category.id
+                          ? styles.selectedCategoryIcon
+                          : styles.categoryIcon
+                      }
+                    /> */}
                     <Text
                       style={
-                        selectedCategory === categoryKey
+                        selectedCategory === category.id
                           ? styles.categoryTextSelected
                           : styles.categoryText
                       }
                     >
-                      {capitalizeFirstLetter(categoryKey)}
+                      {capitalizeFirstLetter(category.name)}
                     </Text>
                   </TouchableOpacity>
                 ))}
               </View>
             </View>
-
             <View style={styles.fieldContainer}>
               <Text style={styles.label}>Комментарий</Text>
               <TextInput
                 style={[styles.input, styles.commentInput]}
                 multiline
                 placeholderTextColor="#a1a1a1"
+                value={comment}
+                onChangeText={setComment}
               />
             </View>
-
-            <TouchableOpacity style={styles.addButton}>
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={handleAddExpense}
+            >
               <Text style={styles.addButtonText}>Добавить</Text>
             </TouchableOpacity>
           </View>
@@ -168,18 +230,31 @@ export default function AddExpenseModal({
 
 const styles = StyleSheet.create({
   modalContainer: {
+    margin: 0,
     flex: 1,
     justifyContent: 'flex-end',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
+  handle: {
+    left: '47%',
+    top: -25,
+    width: 40,
+    height: 5,
+    borderRadius: 2.5,
+    backgroundColor: '#ccc',
+  },
   modalContent: {
-    height: '100%',
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+
+    height: '97%',
     backgroundColor: '#1a1a1a',
     paddingTop: 54,
     paddingLeft: 24,
     paddingRight: 26,
   },
   closeButtonContainer: {
+    display: 'none',
     position: 'absolute',
     top: 63,
     right: 26, // Align with paddingLeft
@@ -253,7 +328,6 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     marginRight: 8,
-    tintColor: '#a1a1a1',
   },
   dateTimeText: {
     color: 'white',
@@ -288,13 +362,13 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
     marginRight: 6,
-    tintColor: 'white',
+    color: 'white',
   },
   selectedCategoryIcon: {
     width: 16,
     height: 16,
     marginRight: 6,
-    tintColor: 'black',
+    color: 'black',
   },
   categoryText: {
     color: 'white',

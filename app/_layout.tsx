@@ -11,6 +11,8 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { ExpensesProvider } from '@/context/ExpensesContext';
+import { CategoriesProvider } from '@/context/CategoriesContext';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -35,14 +37,20 @@ export default function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    <CategoriesProvider>
+      <ExpensesProvider>
+        <GestureHandlerRootView>
+          <ThemeProvider
+            value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+          >
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
-          <Stack.Screen name="+not-found" />
-        </Stack>
-      </ThemeProvider>
-    </GestureHandlerRootView>
+              <Stack.Screen name="+not-found" />
+            </Stack>
+          </ThemeProvider>
+        </GestureHandlerRootView>
+      </ExpensesProvider>
+    </CategoriesProvider>
   );
 }

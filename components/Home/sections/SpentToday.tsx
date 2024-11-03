@@ -1,4 +1,5 @@
-import formattingNumber from '@/utils/FormattingNumber';
+import { useExpensesContext } from '@/context/ExpensesContext';
+import formattingNumber from '@/utils/formattingNumber';
 import { View, Text, StyleSheet, Image } from 'react-native';
 
 interface SpentTodayProps {
@@ -6,14 +7,14 @@ interface SpentTodayProps {
 }
 
 export default function SpentToday({ amount }: SpentTodayProps) {
-  const formattedAmount = formattingNumber(amount);
+  const { computeTotalExpenses } = useExpensesContext();
 
   return (
     <View style={styles.container}>
       <View style={styles.card}>
         <View style={styles.textContainer}>
           <Text style={styles.labelText}>Сегодня потрачено</Text>
-          <Text style={styles.amountText}>₽ {formattedAmount}</Text>
+          <Text style={styles.amountText}>₽ {computeTotalExpenses}</Text>
         </View>
         <View style={[styles.plusContainer, styles.alignedRight]}>
           <Image

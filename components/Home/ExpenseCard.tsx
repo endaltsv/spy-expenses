@@ -1,10 +1,11 @@
-import formattingNumber from '@/utils/FormattingNumber';
+import formattingNumber from '@/utils/formattingNumber';
 import {
   View,
   Text,
   StyleSheet,
   useWindowDimensions,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
@@ -15,14 +16,15 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import { SvgUri } from 'react-native-svg';
-import { categoryIcons } from '@/utils/iconPaths';
 import { useState } from 'react';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface ExpenseCardProps {
   expenseName: string;
   expenseAmount: number;
   expenseDate: string;
   expenseCategory: string;
+  expenseIcon: string | undefined;
   onDelete: () => void;
 }
 
@@ -31,6 +33,7 @@ export default function ExpenseCard({
   expenseAmount,
   expenseDate,
   expenseCategory,
+  expenseIcon,
   onDelete,
 }: ExpenseCardProps) {
   if (typeof window === 'undefined') {
@@ -48,7 +51,7 @@ export default function ExpenseCard({
       const translation = event.translationX;
       translateX.value = translation;
 
-      // Показываем крестик при свайпе более 20% ширины экрана
+      // Show delete icon when swiped more than 20% of the screen width
       if (translation < -width * 0.2) {
         runOnJS(setShowDeleteIcon)(true);
       } else {
@@ -57,21 +60,21 @@ export default function ExpenseCard({
     })
     .onEnd(() => {
       if (translateX.value < -width * 0.6) {
-        // Если свайп более 60%, удаляем карточку
+        // If swipe is more than 60%, delete the card
         translateX.value = withTiming(-width, { duration: 200 }, () => {
           runOnJS(onDelete)();
         });
       } else if (showDeleteIcon) {
-        // Если свайп меньше 60%, но крестик показан, оставляем карточку на месте крестика
+        // If swipe is less than 60% but delete icon is shown, keep the card at delete icon position
         translateX.value = withSpring(-width * 0.2);
       } else {
-        // Возвращаем карточку в исходное положение
+        // Return the card to its original position
         translateX.value = withSpring(0);
       }
     });
 
   const handleDelete = () => {
-    // Удаляем карточку при нажатии на крестик
+    // Delete the card when the delete icon is pressed
     translateX.value = withTiming(-width, { duration: 200 }, () => {
       runOnJS(onDelete)();
     });
@@ -81,12 +84,9 @@ export default function ExpenseCard({
     transform: [{ translateX: translateX.value }],
   }));
 
-  const iconUri =
-    categoryIcons[expenseCategory] || '../../assets/images/plus.svg';
-
   return (
     <View style={styles.container}>
-      {/* Фоновый слой с крестиком */}
+      {/* Background layer with delete icon */}
       {showDeleteIcon && (
         <View style={[styles.deleteBackground]}>
           <TouchableOpacity
@@ -98,12 +98,14 @@ export default function ExpenseCard({
           </TouchableOpacity>
         </View>
       )}
-      {/* Слой с карточкой */}
+      {/* Card layer */}
       <GestureDetector gesture={swipeGesture}>
         <Animated.View style={[styles.card, animatedStyle]}>
           <View style={styles.iconContainer}>
             <View style={styles.iconBackground}>
-              <SvgUri uri={iconUri} width={24} height={24} />
+              {expenseIcon && (
+                <MaterialCommunityIcons name={expenseIcon} size={24} />
+              )}
             </View>
           </View>
           <View style={styles.textContainer}>
@@ -162,6 +164,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  // Style for Image component (PNG/JPG)
+  iconImage: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
   },
   textContainer: {
     flex: 1,
