@@ -1,23 +1,32 @@
 // src/components/RecentExpense/index.tsx
+import React, { memo, useMemo, useCallback } from 'react';
 import { useExpensesContext } from '@/context/ExpensesContext';
 import ExpenseCard from '../ExpenseCard';
 import RecentExpenseText from '../RecentExpenseText';
 import { useCategoriesContext } from '@/context/CategoriesContext';
 
-export default function RecentExpense() {
+const RecentExpense = () => {
   const { getLastFourExpenses, deleteExpense } = useExpensesContext();
   const { findCategoryById } = useCategoriesContext();
-  const expenses = getLastFourExpenses();
-  console.log('EXPENSES=', expenses);
 
-  return (
-    <>
-      <RecentExpenseText />
-      {expenses.map((expense) => {
+  console.log('RecentExpense render.');
+
+  // Memoize the expenses data
+  const expenses = useMemo(() => getLastFourExpenses(), [getLastFourExpenses]);
+
+  // Memoize the render of ExpenseCards
+  const expenseCards = useMemo(
+    () =>
+      expenses.map((expense) => {
         const category = findCategoryById(expense.categoryId);
         const expenseIcon = category ? category.icon : undefined;
         const expenseCategoryName = category ? category.name : 'Без категории';
-        console.log(expense.categoryId, category, expenseIcon);
+
+        // Memoize the delete handler
+        const handleDelete = () => {
+          deleteExpense(expense.id);
+        };
+
         return (
           <ExpenseCard
             key={expense.id}
@@ -26,10 +35,20 @@ export default function RecentExpense() {
             expenseDate={expense.dateTime}
             expenseCategory={expenseCategoryName}
             expenseIcon={expenseIcon}
-            onDelete={() => deleteExpense(expense.id)} // Передаем функцию удаления
+            onDelete={handleDelete}
           />
         );
-      })}
+      }),
+    [expenses, findCategoryById, deleteExpense],
+  );
+
+  return (
+    <>
+      <RecentExpenseText />
+      {expenseCards}
     </>
   );
-}
+};
+
+// Export the memoized component
+export default memo(RecentExpense);

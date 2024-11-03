@@ -1,3 +1,4 @@
+import React, { memo, useState, useMemo, useCallback } from 'react';
 import formattingNumber from '@/utils/formattingNumber';
 import {
   View,
@@ -15,8 +16,6 @@ import Animated, {
   withTiming,
   runOnJS,
 } from 'react-native-reanimated';
-import { SvgUri } from 'react-native-svg';
-import { useState } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface ExpenseCardProps {
@@ -28,57 +27,64 @@ interface ExpenseCardProps {
   onDelete: () => void;
 }
 
-export default function ExpenseCard({
+const ExpenseCard = ({
   expenseName,
   expenseAmount,
   expenseDate,
   expenseCategory,
   expenseIcon,
   onDelete,
-}: ExpenseCardProps) {
-  if (typeof window === 'undefined') {
-    return null;
-  }
+}: ExpenseCardProps) => {
+  console.log('ExpenseCard render.');
 
   const { width } = useWindowDimensions();
-  const formattedAmount = formattingNumber(expenseAmount);
+  const formattedAmount = useMemo(
+    () => formattingNumber(expenseAmount),
+    [expenseAmount],
+  );
 
   const translateX = useSharedValue(0);
   const [showDeleteIcon, setShowDeleteIcon] = useState(false);
 
-  const swipeGesture = Gesture.Pan()
-    .onUpdate((event) => {
-      const translation = event.translationX;
-      translateX.value = translation;
+  // Memoize the gesture handler
+  const swipeGesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .onUpdate((event) => {
+          const translation = event.translationX;
+          translateX.value = translation;
 
-      // Show delete icon when swiped more than 20% of the screen width
-      if (translation < -width * 0.2) {
-        runOnJS(setShowDeleteIcon)(true);
-      } else {
-        runOnJS(setShowDeleteIcon)(false);
-      }
-    })
-    .onEnd(() => {
-      if (translateX.value < -width * 0.6) {
-        // If swipe is more than 60%, delete the card
-        translateX.value = withTiming(-width, { duration: 200 }, () => {
-          runOnJS(onDelete)();
-        });
-      } else if (showDeleteIcon) {
-        // If swipe is less than 60% but delete icon is shown, keep the card at delete icon position
-        translateX.value = withSpring(-width * 0.2);
-      } else {
-        // Return the card to its original position
-        translateX.value = withSpring(0);
-      }
-    });
+          // Show delete icon when swiped more than 20% of the screen width
+          if (translation < -width * 0.2) {
+            runOnJS(setShowDeleteIcon)(true);
+          } else {
+            runOnJS(setShowDeleteIcon)(false);
+          }
+        })
+        .onEnd(() => {
+          if (translateX.value < -width * 0.6) {
+            // If swipe is more than 60%, delete the card
+            translateX.value = withTiming(-width, { duration: 200 }, () => {
+              runOnJS(onDelete)();
+            });
+          } else if (showDeleteIcon) {
+            // If swipe is less than 60% but delete icon is shown, keep the card at delete icon position
+            translateX.value = withSpring(-width * 0.2);
+          } else {
+            // Return the card to its original position
+            translateX.value = withSpring(0);
+          }
+        }),
+    [translateX, width, showDeleteIcon, onDelete],
+  );
 
-  const handleDelete = () => {
+  // Memoize the delete handler
+  const handleDelete = useCallback(() => {
     // Delete the card when the delete icon is pressed
     translateX.value = withTiming(-width, { duration: 200 }, () => {
       runOnJS(onDelete)();
     });
-  };
+  }, [translateX, width, onDelete]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
@@ -119,7 +125,10 @@ export default function ExpenseCard({
       </GestureDetector>
     </View>
   );
-}
+};
+
+// Export the memoized component
+export default memo(ExpenseCard);
 
 const styles = StyleSheet.create({
   container: {

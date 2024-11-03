@@ -12,6 +12,7 @@ import AddExpenseModal from './Modal';
 import { useCategoriesContext } from '@/context/CategoriesContext';
 
 export function AddButton() {
+  console.log('AddButton render');
   const [visible, setVisible] = useState(false);
 
   const toggleModal = () => {

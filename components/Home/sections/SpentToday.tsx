@@ -1,12 +1,10 @@
 import { useExpensesContext } from '@/context/ExpensesContext';
 import formattingNumber from '@/utils/formattingNumber';
+import { memo } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 
-interface SpentTodayProps {
-  amount: number;
-}
-
-export default function SpentToday({ amount }: SpentTodayProps) {
+function SpentToday() {
+  console.log('SpentToday render.');
   const { computeTotalExpenses } = useExpensesContext();
 
   return (
@@ -26,6 +24,7 @@ export default function SpentToday({ amount }: SpentTodayProps) {
     </View>
   );
 }
+export default memo(SpentToday);
 
 const styles = StyleSheet.create({
   container: {

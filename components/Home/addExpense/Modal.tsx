@@ -27,9 +27,9 @@ export default function AddExpenseModal({
   visible,
   toggleModal,
 }: AddExpenseModalProps) {
+  console.log('AddExpenseModal(Modal) render.');
   const { addExpense, getCategoryIdByName } = useExpensesContext();
   const { categories } = useCategoriesContext();
-  console.log('CATEGORIES=', categories);
 
   const [name, setName] = useState<string>('');
   const [amount, setAmount] = useState<string>(''); // Храним сумму как строку для удобства ввода

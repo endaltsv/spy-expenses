@@ -1,5 +1,5 @@
 // src/hooks/useCategories.ts
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Category } from '@/models/Category';
 import {
   addCategory,
@@ -15,7 +15,7 @@ const useCategories = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchCategories = () => {
+  const fetchCategories = useCallback(() => {
     setLoading(true);
     try {
       let loadedCategories = getAllCategories();
@@ -30,13 +30,13 @@ const useCategories = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [fetchCategories]);
 
-  const addNewCategory = async (category: Omit<Category, 'id'>) => {
+  const addNewCategory = useCallback(async (category: Omit<Category, 'id'>) => {
     try {
       const id = await addCategory(category);
       const newCategory: Category = { ...category, id };
@@ -45,30 +45,30 @@ const useCategories = () => {
       console.error('Ошибка при добавлении категории:', err);
       setError('Ошибка при добавлении категории.');
     }
-  };
+  }, []);
 
-  const updateExistingCategory = async (
-    id: string,
-    updatedFields: Partial<Category>,
-  ) => {
-    try {
-      const success = await updateCategory(id, updatedFields);
-      if (success) {
-        setCategories((prevCategories) =>
-          prevCategories.map((category) =>
-            category.id === id ? { ...category, ...updatedFields } : category,
-          ),
-        );
-      } else {
-        setError('Категория не найдена.');
+  const updateExistingCategory = useCallback(
+    async (id: string, updatedFields: Partial<Category>) => {
+      try {
+        const success = await updateCategory(id, updatedFields);
+        if (success) {
+          setCategories((prevCategories) =>
+            prevCategories.map((category) =>
+              category.id === id ? { ...category, ...updatedFields } : category,
+            ),
+          );
+        } else {
+          setError('Категория не найдена.');
+        }
+      } catch (err: any) {
+        console.error('Ошибка при обновлении категории:', err);
+        setError('Ошибка при обновлении категории.');
       }
-    } catch (err: any) {
-      console.error('Ошибка при обновлении категории:', err);
-      setError('Ошибка при обновлении категории.');
-    }
-  };
+    },
+    [],
+  );
 
-  const deleteExistingCategory = async (id: string) => {
+  const deleteExistingCategory = useCallback(async (id: string) => {
     try {
       await deleteCategory(id);
       setCategories((prevCategories) =>
@@ -78,7 +78,11 @@ const useCategories = () => {
       console.error('Ошибка при удалении категории:', err);
       setError('Ошибка при удалении категории.');
     }
-  };
+  }, []);
+
+  const refetch = useCallback(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   return {
     categories,
@@ -87,7 +91,7 @@ const useCategories = () => {
     addNewCategory,
     updateExistingCategory,
     deleteExistingCategory,
-    refetch: fetchCategories,
+    refetch,
   };
 };
 

@@ -7,12 +7,12 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
 export default function HomeScreen() {
   const totalExpenses = 40567.8;
-
+  console.log('HomeScreen(index) render.');
   return (
     <ParallaxScrollView>
       <View style={styles.container}>
         <View style={styles.mainContainer}>
-          <SpentToday amount={totalExpenses} />
+          <SpentToday />
           <RecentExpense />
           <MonthCategory />
         </View>

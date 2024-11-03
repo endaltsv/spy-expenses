@@ -11,6 +11,7 @@ export default function MonthCategoryCard({
   categoryTotalExpense,
   categoryTotalPurchase,
 }: MonthCategoryCardProps) {
+  console.log('MonthCategoryCard render: ');
   return (
     <View style={styles.card}>
       <View style={styles.iconContainer}>

@@ -1,6 +1,8 @@
+import { memo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function RecentExpenseText() {
+function RecentExpenseText() {
+  console.log('RecentExpenseText render.');
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Недавние траты</Text>
@@ -8,6 +10,7 @@ export default function RecentExpenseText() {
     </View>
   );
 }
+export default memo(RecentExpenseText);
 
 const styles = StyleSheet.create({
   container: {

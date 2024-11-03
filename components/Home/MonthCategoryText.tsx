@@ -1,6 +1,7 @@
+import { memo } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
-
-export default function MonthCategoryText() {
+function MonthCategoryText() {
+  console.log('MonthCategoryText render.');
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Категории месяца</Text>
@@ -11,6 +12,7 @@ export default function MonthCategoryText() {
     </View>
   );
 }
+export default memo(MonthCategoryText);
 
 const styles = StyleSheet.create({
   container: {
