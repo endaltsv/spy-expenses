@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { AddButton } from '@/components/Home/addExpense/TabButton';
+import AddButton from '@/components/Home/addExpense/TabButton';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function TabLayout() {

@@ -1,23 +1,15 @@
-import React, { useState } from 'react';
-import {
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  Modal,
-  View,
-  Text,
-} from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { TouchableOpacity, StyleSheet, Image, View, Text } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import AddExpenseModal from './Modal';
-import { useCategoriesContext } from '@/context/CategoriesContext';
 
-export function AddButton() {
+function AddButton() {
   console.log('AddButton render');
   const [visible, setVisible] = useState(false);
 
-  const toggleModal = () => {
-    setVisible(!visible);
-  };
+  const toggleModal = useCallback(() => {
+    setVisible((prevVisible) => !prevVisible);
+  }, []);
 
   return (
     <>
@@ -32,6 +24,8 @@ export function AddButton() {
     </>
   );
 }
+
+export default React.memo(AddButton);
 
 const styles = StyleSheet.create({
   button: {

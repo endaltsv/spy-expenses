@@ -23,10 +23,7 @@ interface AddExpenseModalProps {
   toggleModal: () => void;
 }
 
-export default function AddExpenseModal({
-  visible,
-  toggleModal,
-}: AddExpenseModalProps) {
+function AddExpenseModal({ visible, toggleModal }: AddExpenseModalProps) {
   console.log('AddExpenseModal(Modal) render.');
   const { addExpense, getCategoryIdByName } = useExpensesContext();
   const { categories } = useCategoriesContext();
@@ -147,7 +144,7 @@ export default function AddExpenseModal({
                 onPress={() => setShowDatePicker(true)}
               >
                 <Image
-                  source={require('../../../assets/images/calendar.svg')} // Убедитесь, что путь к изображению корректен
+                  source={require('../../../assets/images/calendar.svg')}
                   style={styles.calendarIcon}
                   tintColor={'#a1a1a1'}
                 />
@@ -184,14 +181,6 @@ export default function AddExpenseModal({
                           : styles.categoryIcon
                       }
                     />
-                    {/* <Image
-                      source={{ uri: category.icon }}
-                      style={
-                        selectedCategory === category.id
-                          ? styles.selectedCategoryIcon
-                          : styles.categoryIcon
-                      }
-                    /> */}
                     <Text
                       style={
                         selectedCategory === category.id
@@ -227,6 +216,8 @@ export default function AddExpenseModal({
     </Modal>
   );
 }
+
+export default React.memo(AddExpenseModal);
 
 const styles = StyleSheet.create({
   modalContainer: {
