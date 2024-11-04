@@ -11,9 +11,10 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   Alert,
+  ScrollView,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePickerModal from 'react-native-modal-datetime-picker'; // Импорт новой библиотеки
 import { useExpensesContext } from '@/context/ExpensesContext';
 import { useCategoriesContext } from '@/context/CategoriesContext';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -31,17 +32,22 @@ function AddExpenseModal({ visible, toggleModal }: AddExpenseModalProps) {
   const [name, setName] = useState<string>('');
   const [amount, setAmount] = useState<string>(''); // Храним сумму как строку для удобства ввода
   const [date, setDate] = useState<Date>(new Date());
-  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
+  const [isDatePickerVisible, setDatePickerVisibility] =
+    useState<boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [comment, setComment] = useState<string>('');
 
-  const onChangeDate = (event: any, selectedDate?: Date) => {
-    if (Platform.OS === 'android') {
-      setShowDatePicker(false);
-    }
-    if (selectedDate) {
-      setDate(selectedDate);
-    }
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  const handleConfirmDate = (selectedDate: Date) => {
+    setDate(selectedDate);
+    hideDatePicker();
   };
 
   const formattedDate = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
@@ -106,110 +112,111 @@ function AddExpenseModal({ visible, toggleModal }: AddExpenseModalProps) {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <View style={styles.handle} />
-            {/* Визуальная индикация для свайпа */}
-            {/* Close Button Positioned Above the Title */}
-            <View style={styles.closeButtonContainer}>
-              <TouchableOpacity onPress={toggleModal}>
-                <Text style={styles.closeButton}>✕</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.header}>
-              <Text style={styles.title}>Новая трата</Text>
-            </View>
-            <View style={styles.fieldContainer}>
-              <Text style={styles.labelSum}>Сумма</Text>
-              <TextInput
-                style={styles.inputSum}
-                placeholder="Введите сумму"
-                keyboardType="numeric"
-                placeholderTextColor="#a1a1a1"
-                value={amount}
-                onChangeText={setAmount}
-              />
-            </View>
-            <View style={styles.fieldContainer}>
-              <Text style={styles.label}>Название</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Введите название"
-                placeholderTextColor="#a1a1a1"
-                value={name}
-                onChangeText={setName}
-              />
-            </View>
-            <View style={styles.fieldContainer}>
-              <Text style={styles.label}>Дата и время</Text>
-              <TouchableOpacity
-                style={styles.dateTimeContainer}
-                onPress={() => setShowDatePicker(true)}
-              >
-                <Image
-                  source={require('../../../assets/images/calendar.svg')}
-                  style={styles.calendarIcon}
-                  tintColor={'#a1a1a1'}
-                />
-                <Text style={styles.dateTimeText}>{formattedDate}</Text>
-              </TouchableOpacity>
-              {showDatePicker && (
-                <DateTimePicker
-                  value={date}
-                  mode="datetime"
-                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                  onChange={onChangeDate}
-                />
-              )}
-            </View>
-            <View style={styles.fieldContainer}>
-              <Text style={styles.label}>Категория</Text>
-              <View style={styles.categoryContainer}>
-                {categories.map((category) => (
-                  <TouchableOpacity
-                    key={category.id}
-                    style={
-                      selectedCategory === category.id
-                        ? styles.selectedCategoryButton
-                        : styles.categoryButton
-                    }
-                    onPress={() => setSelectedCategory(category.id)}
-                  >
-                    <MaterialCommunityIcons
-                      name={category.icon}
-                      size={16}
-                      style={
-                        selectedCategory === category.id
-                          ? styles.selectedCategoryIcon
-                          : styles.categoryIcon
-                      }
-                    />
-                    <Text
-                      style={
-                        selectedCategory === category.id
-                          ? styles.categoryTextSelected
-                          : styles.categoryText
-                      }
-                    >
-                      {capitalizeFirstLetter(category.name)}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-            <View style={styles.fieldContainer}>
-              <Text style={styles.label}>Комментарий</Text>
-              <TextInput
-                style={[styles.input, styles.commentInput]}
-                multiline
-                placeholderTextColor="#a1a1a1"
-                value={comment}
-                onChangeText={setComment}
-              />
-            </View>
-            <TouchableOpacity
-              style={styles.addButton}
-              onPress={handleAddExpense}
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
             >
-              <Text style={styles.addButtonText}>Добавить</Text>
-            </TouchableOpacity>
+              <View style={styles.closeButtonContainer}>
+                <TouchableOpacity onPress={toggleModal}>
+                  <Text style={styles.closeButton}>✕</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.header}>
+                <Text style={styles.title}>Новая трата</Text>
+              </View>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.labelSum}>Сумма</Text>
+                <TextInput
+                  style={styles.inputSum}
+                  placeholder="Введите сумму"
+                  keyboardType="numeric"
+                  placeholderTextColor="#a1a1a1"
+                  value={amount}
+                  onChangeText={setAmount}
+                />
+              </View>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>Название</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Введите название"
+                  placeholderTextColor="#a1a1a1"
+                  value={name}
+                  onChangeText={setName}
+                />
+              </View>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>Дата и время</Text>
+                <TouchableOpacity
+                  style={styles.dateTimeContainer}
+                  onPress={showDatePicker}
+                >
+                  <Image
+                    source={require('../../../assets/images/calendar.svg')}
+                    style={styles.calendarIcon}
+                    tintColor={'#a1a1a1'}
+                  />
+                  <Text style={styles.dateTimeText}>{formattedDate}</Text>
+                </TouchableOpacity>
+              </View>
+              <DateTimePickerModal
+                isVisible={isDatePickerVisible}
+                mode="datetime"
+                onConfirm={handleConfirmDate}
+                onCancel={hideDatePicker}
+              />
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>Категория</Text>
+                <View style={styles.categoryContainer}>
+                  {categories.map((category) => (
+                    <TouchableOpacity
+                      key={category.id}
+                      style={
+                        selectedCategory === category.id
+                          ? styles.selectedCategoryButton
+                          : styles.categoryButton
+                      }
+                      onPress={() => setSelectedCategory(category.id)}
+                    >
+                      <MaterialCommunityIcons
+                        name={category.icon}
+                        size={16}
+                        style={
+                          selectedCategory === category.id
+                            ? styles.selectedCategoryIcon
+                            : styles.categoryIcon
+                        }
+                      />
+                      <Text
+                        style={
+                          selectedCategory === category.id
+                            ? styles.categoryTextSelected
+                            : styles.categoryText
+                        }
+                      >
+                        {capitalizeFirstLetter(category.name)}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>Комментарий</Text>
+                <TextInput
+                  style={[styles.input, styles.commentInput]}
+                  multiline
+                  placeholderTextColor="#a1a1a1"
+                  value={comment}
+                  onChangeText={setComment}
+                />
+              </View>
+              <TouchableOpacity
+                style={styles.addButton}
+                onPress={handleAddExpense}
+              >
+                <Text style={styles.addButtonText}>Добавить</Text>
+              </TouchableOpacity>
+            </ScrollView>
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -224,7 +231,6 @@ const styles = StyleSheet.create({
     margin: 0,
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   handle: {
     left: '47%',
@@ -237,18 +243,19 @@ const styles = StyleSheet.create({
   modalContent: {
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-
-    height: '97%',
+    height: '95%',
     backgroundColor: '#1a1a1a',
     paddingTop: 54,
     paddingLeft: 24,
     paddingRight: 26,
+    paddingBottom: 16,
+    marginBottom: 1,
   },
   closeButtonContainer: {
     display: 'none',
     position: 'absolute',
     top: 63,
-    right: 26, // Align with paddingLeft
+    right: 26,
     zIndex: 1,
   },
   closeButton: {
@@ -256,7 +263,7 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    marginTop: 54, // Space below the close button
+    marginTop: 54,
     marginBottom: 2,
   },
   title: {
@@ -265,7 +272,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontFamily: 'SFPro-Bold',
   },
-
   fieldContainer: {
     marginTop: 22,
   },
@@ -303,7 +309,7 @@ const styles = StyleSheet.create({
   },
   commentInput: {
     height: 92,
-    textAlignVertical: 'top', // For Android to align text at the top
+    textAlignVertical: 'top',
   },
   dateTimeContainer: {
     flexDirection: 'row',

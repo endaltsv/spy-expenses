@@ -1,27 +1,17 @@
-import React, { useState, useCallback } from 'react';
-import { TouchableOpacity, StyleSheet, Image, View, Text } from 'react-native';
-import { Colors } from '@/constants/Colors';
-import AddExpenseModal from './Modal';
+import React from 'react';
+import { TouchableOpacity, StyleSheet, Text } from 'react-native';
+import { useTheme } from 'styled-components/native';
 
-function AddButton() {
-  console.log('AddButton render');
-  const [visible, setVisible] = useState(false);
-
-  const toggleModal = useCallback(() => {
-    setVisible((prevVisible) => !prevVisible);
-  }, []);
+function AddButton({ onPress }: { onPress: () => void }) {
+  const theme = useTheme();
 
   return (
-    <>
-      <TouchableOpacity style={styles.button} onPress={toggleModal}>
-        <Image
-          source={require('../../../assets/images/plus.svg')}
-          style={styles.icon}
-          resizeMode="contain"
-        />
-      </TouchableOpacity>
-      <AddExpenseModal visible={visible} toggleModal={toggleModal} />
-    </>
+    <TouchableOpacity
+      style={[styles.button, { backgroundColor: theme.colors.primary }]}
+      onPress={onPress}
+    >
+      <Text style={styles.buttonText}>+</Text>
+    </TouchableOpacity>
   );
 }
 
@@ -30,19 +20,19 @@ export default React.memo(AddButton);
 const styles = StyleSheet.create({
   button: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 30,
     left: '50%',
-    transform: [{ translateX: -35 }],
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: Colors.light.tint,
+    transform: [{ translateX: -30 }],
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 5, // Тень для Android
+    zIndex: 3,
   },
-  icon: {
-    width: 24,
-    height: 24,
+  buttonText: {
+    fontSize: 24,
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });

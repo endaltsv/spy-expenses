@@ -17,6 +17,7 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useTheme } from 'styled-components/native';
 
 interface ExpenseCardProps {
   expenseName: string;
@@ -36,7 +37,7 @@ const ExpenseCard = ({
   onDelete,
 }: ExpenseCardProps) => {
   console.log('ExpenseCard render.');
-
+  const theme = useTheme();
   const { width } = useWindowDimensions();
   const formattedAmount = useMemo(
     () => formattingNumber(expenseAmount),
@@ -46,15 +47,12 @@ const ExpenseCard = ({
   const translateX = useSharedValue(0);
   const [showDeleteIcon, setShowDeleteIcon] = useState(false);
 
-  // Memoize the gesture handler
   const swipeGesture = useMemo(
     () =>
       Gesture.Pan()
         .onUpdate((event) => {
           const translation = event.translationX;
           translateX.value = translation;
-
-          // Show delete icon when swiped more than 20% of the screen width
           if (translation < -width * 0.2) {
             runOnJS(setShowDeleteIcon)(true);
           } else {
@@ -63,24 +61,19 @@ const ExpenseCard = ({
         })
         .onEnd(() => {
           if (translateX.value < -width * 0.6) {
-            // If swipe is more than 60%, delete the card
             translateX.value = withTiming(-width, { duration: 200 }, () => {
               runOnJS(onDelete)();
             });
           } else if (showDeleteIcon) {
-            // If swipe is less than 60% but delete icon is shown, keep the card at delete icon position
             translateX.value = withSpring(-width * 0.2);
           } else {
-            // Return the card to its original position
             translateX.value = withSpring(0);
           }
         }),
     [translateX, width, showDeleteIcon, onDelete],
   );
 
-  // Memoize the delete handler
   const handleDelete = useCallback(() => {
-    // Delete the card when the delete icon is pressed
     translateX.value = withTiming(-width, { duration: 200 }, () => {
       runOnJS(onDelete)();
     });
@@ -92,7 +85,6 @@ const ExpenseCard = ({
 
   return (
     <View style={styles.container}>
-      {/* Background layer with delete icon */}
       {showDeleteIcon && (
         <View style={[styles.deleteBackground]}>
           <TouchableOpacity
@@ -104,22 +96,36 @@ const ExpenseCard = ({
           </TouchableOpacity>
         </View>
       )}
-      {/* Card layer */}
       <GestureDetector gesture={swipeGesture}>
-        <Animated.View style={[styles.card, animatedStyle]}>
+        <Animated.View
+          style={[
+            styles.card,
+            animatedStyle,
+            { backgroundColor: theme.colors.secondary },
+          ]}
+        >
           <View style={styles.iconContainer}>
-            <View style={styles.iconBackground}>
+            <View
+              style={[
+                styles.iconBackground,
+                { backgroundColor: theme.colors.primary },
+              ]}
+            >
               {expenseIcon && (
                 <MaterialCommunityIcons name={expenseIcon} size={24} />
               )}
             </View>
           </View>
           <View style={styles.textContainer}>
-            <Text style={styles.expenseName}>{expenseName}</Text>
-            <Text style={styles.expenseDate}>{expenseDate}</Text>
+            <Text style={[styles.expenseName, { color: theme.colors.text }]}>
+              {expenseName}
+            </Text>
+            <Text style={[styles.expenseDate]}>{expenseDate}</Text>
           </View>
           <View>
-            <Text style={styles.expenseAmount}>- ₽{formattedAmount}</Text>
+            <Text style={[styles.expenseAmount, { color: theme.colors.text }]}>
+              - ₽{formattedAmount}
+            </Text>
           </View>
         </Animated.View>
       </GestureDetector>
@@ -127,7 +133,6 @@ const ExpenseCard = ({
   );
 };
 
-// Export the memoized component
 export default memo(ExpenseCard);
 
 const styles = StyleSheet.create({
@@ -156,7 +161,6 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ededed',
     paddingHorizontal: 16,
     height: 72,
     borderRadius: 14,
@@ -170,7 +174,6 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#ffffff',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -182,12 +185,12 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
+    gap: 4,
   },
   expenseName: {
-    fontFamily: 'SFPro-Bold',
+    fontFamily: 'SFPro-Regular',
     fontSize: 16,
     lineHeight: 20,
-    color: '#000',
   },
   expenseDate: {
     fontFamily: 'SFPro-Regular',

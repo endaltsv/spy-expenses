@@ -2,22 +2,31 @@ import { useExpensesContext } from '@/context/ExpensesContext';
 import formattingNumber from '@/utils/formattingNumber';
 import { memo } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
+import { useTheme } from 'styled-components/native';
 
 function SpentToday() {
   console.log('SpentToday render.');
   const { computeTotalExpenses } = useExpensesContext();
+  const theme = useTheme();
 
   return (
     <View style={styles.container}>
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: theme.colors.primary }]}>
         <View style={styles.textContainer}>
           <Text style={styles.labelText}>Сегодня потрачено</Text>
           <Text style={styles.amountText}>₽ {computeTotalExpenses}</Text>
         </View>
-        <View style={[styles.plusContainer, styles.alignedRight]}>
+        <View
+          style={[
+            styles.plusContainer,
+            styles.alignedRight,
+            { backgroundColor: theme.colors.secondary },
+          ]}
+        >
           <Image
             source={require('../../../assets/images/plus.svg')}
             style={styles.plusIcon}
+            tintColor={theme.colors.text}
           />
         </View>
       </View>
@@ -34,7 +43,6 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#d9d9d9',
     width: '100%',
     height: 108,
     borderRadius: 16,
@@ -61,7 +69,6 @@ const styles = StyleSheet.create({
     height: 44,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
     borderRadius: 100,
   },
   plusIcon: {

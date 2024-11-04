@@ -10,20 +10,22 @@ const EXPENSES_INDEX_KEY = 'expenses_index';
  * @param expense Данные траты без ID.
  * @returns ID новой траты.
  */
-export const addExpense = (expense: Omit<Expense, 'id'>): string => {
+export const addExpense = async (
+  expense: Omit<Expense, 'id'>,
+): Promise<string> => {
   const id = generateUUID();
   const newExpense: Expense = { ...expense, id };
 
   // Сохранение самой траты
-  storage.set(`expense_${id}`, JSON.stringify(newExpense));
+  await storage.set(`expense_${id}`, JSON.stringify(newExpense));
 
   // Обновление индекса трат
-  const currentIndexString = storage.getString(EXPENSES_INDEX_KEY);
+  const currentIndexString = await storage.getString(EXPENSES_INDEX_KEY);
   const expensesIndex: string[] = currentIndexString
     ? JSON.parse(currentIndexString)
     : [];
   expensesIndex.push(id);
-  storage.set(EXPENSES_INDEX_KEY, JSON.stringify(expensesIndex));
+  await storage.set(EXPENSES_INDEX_KEY, JSON.stringify(expensesIndex));
 
   return id;
 };
@@ -32,17 +34,20 @@ export const addExpense = (expense: Omit<Expense, 'id'>): string => {
  * Получает все траты.
  * @returns Массив трат.
  */
-export const getAllExpenses = (): Expense[] => {
-  const currentIndexString = storage.getString(EXPENSES_INDEX_KEY);
+export const getAllExpenses = async (): Promise<Expense[]> => {
+  const currentIndexString = await storage.getString(EXPENSES_INDEX_KEY);
   const expensesIndex: string[] = currentIndexString
     ? JSON.parse(currentIndexString)
     : [];
-  const expenses: Expense[] = expensesIndex
-    .map((id) => {
-      const expenseString = storage.getString(`expense_${id}`);
-      return expenseString ? JSON.parse(expenseString) : null;
-    })
-    .filter((expense): expense is Expense => expense !== null);
+  const expenses: Expense[] = [];
+
+  for (const id of expensesIndex) {
+    const expenseString = await storage.getString(`expense_${id}`);
+    if (expenseString) {
+      const expense: Expense = JSON.parse(expenseString);
+      expenses.push(expense);
+    }
+  }
 
   return expenses;
 };
@@ -53,15 +58,15 @@ export const getAllExpenses = (): Expense[] => {
  * @param updatedFields Обновленные поля.
  * @returns `true` если обновление прошло успешно, иначе `false`.
  */
-export const updateExpense = (
+export const updateExpense = async (
   id: string,
   updatedFields: Partial<Expense>,
-): boolean => {
-  const expenseString = storage.getString(`expense_${id}`);
+): Promise<boolean> => {
+  const expenseString = await storage.getString(`expense_${id}`);
   if (expenseString) {
     const expense: Expense = JSON.parse(expenseString);
     const updatedExpense: Expense = { ...expense, ...updatedFields };
-    storage.set(`expense_${id}`, JSON.stringify(updatedExpense));
+    await storage.set(`expense_${id}`, JSON.stringify(updatedExpense));
     return true;
   }
   return false;
@@ -71,15 +76,15 @@ export const updateExpense = (
  * Удаляет существующую трату.
  * @param id ID траты.
  */
-export const deleteExpense = (id: string): void => {
+export const deleteExpense = async (id: string): Promise<void> => {
   // Удаление самой траты
-  storage.delete(`expense_${id}`);
+  await storage.delete(`expense_${id}`);
 
   // Обновление индекса трат
-  const currentIndexString = storage.getString(EXPENSES_INDEX_KEY);
+  const currentIndexString = await storage.getString(EXPENSES_INDEX_KEY);
   let expensesIndex: string[] = currentIndexString
     ? JSON.parse(currentIndexString)
     : [];
   expensesIndex = expensesIndex.filter((expenseId) => expenseId !== id);
-  storage.set(EXPENSES_INDEX_KEY, JSON.stringify(expensesIndex));
+  await storage.set(EXPENSES_INDEX_KEY, JSON.stringify(expensesIndex));
 };

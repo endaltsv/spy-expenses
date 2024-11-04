@@ -1,4 +1,6 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, StyleSheet, Image } from 'react-native';
+import { useTheme } from 'styled-components/native';
 
 interface MonthCategoryCardProps {
   categoryName: string;
@@ -12,16 +14,19 @@ export default function MonthCategoryCard({
   categoryTotalPurchase,
 }: MonthCategoryCardProps) {
   console.log('MonthCategoryCard render: ');
+  const theme = useTheme();
   return (
-    <View style={styles.card}>
-      <View style={styles.iconContainer}>
-        <Image
-          source={require('../../assets/images/circle.png')}
-          style={styles.icon}
-        />
+    <View style={[styles.card, { backgroundColor: theme.colors.secondary }]}>
+      <View
+        style={[
+          styles.iconContainer,
+          { backgroundColor: theme.colors.primary },
+        ]}
+      >
+        <MaterialCommunityIcons name="abacus" size={24} />
       </View>
       <Text style={styles.categoryName}>{categoryName}</Text>
-      <Text style={styles.categoryTotalExpense}>
+      <Text style={[styles.categoryTotalExpense, { color: theme.colors.text }]}>
         ₽ {categoryTotalExpense.toFixed(2)}
       </Text>
       <Text style={styles.categoryTotalPurchase}>

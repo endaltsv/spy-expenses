@@ -2,15 +2,23 @@ import MonthCategory from '@/components/Home/sections/MonthCategory';
 import RecentExpense from '@/components/Home/sections/RecentExpense';
 import SpentToday from '@/components/Home/sections/SpentToday';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { useSettingsContext } from '@/context/SettingsContext';
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { useTheme } from 'styled-components/native';
 
 export default function HomeScreen() {
-  const totalExpenses = 40567.8;
+  const { settings } = useSettingsContext();
+  const theme = useTheme();
+  console.log('theme:', theme);
+  console.log('User settings:', settings);
   console.log('HomeScreen(index) render.');
+
   return (
     <ParallaxScrollView>
-      <View style={styles.container}>
+      <View
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
+      >
         <View style={styles.mainContainer}>
           <SpentToday />
           <RecentExpense />
@@ -23,7 +31,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
+    marginTop: '10%',
     paddingBottom: '30%',
   },
 

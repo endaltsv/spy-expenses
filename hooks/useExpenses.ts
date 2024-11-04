@@ -1,5 +1,5 @@
 // src/hooks/useExpenses.ts
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Expense } from '../models/Expense';
 import {
   addExpense,
@@ -13,61 +13,70 @@ const useExpenses = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchExpenses = () => {
+  const fetchExpenses = useCallback(async () => {
+    setLoading(true);
     try {
-      const loadedExpenses = getAllExpenses();
+      const loadedExpenses = await getAllExpenses();
       setExpenses(loadedExpenses);
-    } catch (err) {
+    } catch (err: any) {
+      console.error('Ошибка при загрузке трат:', err);
       setError('Ошибка при загрузке трат.');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchExpenses();
-  }, []);
+  }, [fetchExpenses]);
 
-  const addNewExpense = (expense: Omit<Expense, 'id'>) => {
+  const addNewExpense = useCallback(async (expense: Omit<Expense, 'id'>) => {
     try {
-      const id = addExpense(expense);
+      const id = await addExpense(expense);
       const newExpense: Expense = { ...expense, id };
       setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
-    } catch (err) {
+    } catch (err: any) {
+      console.error('Ошибка при добавлении траты:', err);
       setError('Ошибка при добавлении траты.');
     }
-  };
+  }, []);
 
-  const updateExistingExpense = (
-    id: string,
-    updatedFields: Partial<Expense>,
-  ) => {
-    try {
-      const success = updateExpense(id, updatedFields);
-      if (success) {
-        setExpenses((prevExpenses) =>
-          prevExpenses.map((expense) =>
-            expense.id === id ? { ...expense, ...updatedFields } : expense,
-          ),
-        );
-      } else {
-        setError('Трата не найдена.');
+  const updateExistingExpense = useCallback(
+    async (id: string, updatedFields: Partial<Expense>) => {
+      try {
+        const success = await updateExpense(id, updatedFields);
+        if (success) {
+          setExpenses((prevExpenses) =>
+            prevExpenses.map((expense) =>
+              expense.id === id ? { ...expense, ...updatedFields } : expense,
+            ),
+          );
+        } else {
+          setError('Трата не найдена.');
+        }
+      } catch (err: any) {
+        console.error('Ошибка при обновлении траты:', err);
+        setError('Ошибка при обновлении траты.');
       }
-    } catch (err) {
-      setError('Ошибка при обновлении траты.');
-    }
-  };
+    },
+    [],
+  );
 
-  const deleteExistingExpense = (id: string) => {
+  const deleteExistingExpense = useCallback(async (id: string) => {
     try {
-      deleteExpense(id);
+      await deleteExpense(id);
       setExpenses((prevExpenses) =>
         prevExpenses.filter((expense) => expense.id !== id),
       );
-    } catch (err) {
+    } catch (err: any) {
+      console.error('Ошибка при удалении траты:', err);
       setError('Ошибка при удалении траты.');
     }
-  };
+  }, []);
+
+  const refetch = useCallback(() => {
+    fetchExpenses();
+  }, [fetchExpenses]);
 
   return {
     expenses,
@@ -76,7 +85,7 @@ const useExpenses = () => {
     addNewExpense,
     updateExistingExpense,
     deleteExistingExpense,
-    refetch: fetchExpenses,
+    refetch,
   };
 };
 

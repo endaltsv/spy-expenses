@@ -11,20 +11,22 @@ const CATEGORIES_INDEX_KEY = 'categories_index';
  * @param category Данные категории без ID.
  * @returns ID новой категории.
  */
-export const addCategory = (category: Omit<Category, 'id'>): string => {
+export const addCategory = async (
+  category: Omit<Category, 'id'>,
+): Promise<string> => {
   const id = generateUUID();
   const newCategory: Category = { ...category, id };
 
   // Сохранение самой категории
-  storage.set(`category_${id}`, JSON.stringify(newCategory));
+  await storage.set(`category_${id}`, JSON.stringify(newCategory));
 
   // Обновление индекса категорий
-  const currentIndexString = storage.getString(CATEGORIES_INDEX_KEY);
+  const currentIndexString = await storage.getString(CATEGORIES_INDEX_KEY);
   const categoriesIndex: string[] = currentIndexString
     ? JSON.parse(currentIndexString)
     : [];
   categoriesIndex.push(id);
-  storage.set(CATEGORIES_INDEX_KEY, JSON.stringify(categoriesIndex));
+  await storage.set(CATEGORIES_INDEX_KEY, JSON.stringify(categoriesIndex));
 
   return id;
 };
@@ -34,29 +36,35 @@ export const addCategory = (category: Omit<Category, 'id'>): string => {
  * @param name Название категории.
  * @returns Объект категории или `null`, если не найдена.
  */
-export const findCategoryByName = (name: string): Category | null => {
-  const categories = getAllCategories();
+export const findCategoryByName = async (
+  name: string,
+): Promise<Category | null> => {
+  const categories = await getAllCategories();
   const normalizedName = name.trim().toLowerCase();
   const category = categories.find(
     (cat) => cat.name.trim().toLowerCase() === normalizedName,
   );
   return category || null;
 };
+
 /**
  * Получает все категории.
  * @returns Массив категорий.
  */
-export const getAllCategories = (): Category[] => {
-  const currentIndexString = storage.getString(CATEGORIES_INDEX_KEY);
+export const getAllCategories = async (): Promise<Category[]> => {
+  const currentIndexString = await storage.getString(CATEGORIES_INDEX_KEY);
   const categoriesIndex: string[] = currentIndexString
     ? JSON.parse(currentIndexString)
     : [];
-  const categories: Category[] = categoriesIndex
-    .map((id) => {
-      const categoryString = storage.getString(`category_${id}`);
-      return categoryString ? JSON.parse(categoryString) : null;
-    })
-    .filter((category): category is Category => category !== null);
+  const categories: Category[] = [];
+
+  for (const id of categoriesIndex) {
+    const categoryString = await storage.getString(`category_${id}`);
+    if (categoryString) {
+      const category: Category = JSON.parse(categoryString);
+      categories.push(category);
+    }
+  }
 
   return categories;
 };
@@ -67,15 +75,15 @@ export const getAllCategories = (): Category[] => {
  * @param updatedFields Обновленные поля.
  * @returns `true` если обновление прошло успешно, иначе `false`.
  */
-export const updateCategory = (
+export const updateCategory = async (
   id: string,
   updatedFields: Partial<Category>,
-): boolean => {
-  const categoryString = storage.getString(`category_${id}`);
+): Promise<boolean> => {
+  const categoryString = await storage.getString(`category_${id}`);
   if (categoryString) {
     const category: Category = JSON.parse(categoryString);
     const updatedCategory: Category = { ...category, ...updatedFields };
-    storage.set(`category_${id}`, JSON.stringify(updatedCategory));
+    await storage.set(`category_${id}`, JSON.stringify(updatedCategory));
     return true;
   }
   return false;
@@ -85,35 +93,35 @@ export const updateCategory = (
  * Удаляет существующую категорию.
  * @param id ID категории.
  */
-export const deleteCategory = (id: string): void => {
+export const deleteCategory = async (id: string): Promise<void> => {
   // Удаление самой категории
-  storage.delete(`category_${id}`);
+  await storage.delete(`category_${id}`);
 
   // Обновление индекса категорий
-  const currentIndexString = storage.getString(CATEGORIES_INDEX_KEY);
+  const currentIndexString = await storage.getString(CATEGORIES_INDEX_KEY);
   let categoriesIndex: string[] = currentIndexString
     ? JSON.parse(currentIndexString)
     : [];
   categoriesIndex = categoriesIndex.filter((categoryId) => categoryId !== id);
-  storage.set(CATEGORIES_INDEX_KEY, JSON.stringify(categoriesIndex));
+  await storage.set(CATEGORIES_INDEX_KEY, JSON.stringify(categoriesIndex));
 };
 
-export const clearAllCategories = (): void => {
-  const categories = getAllCategories();
-  categories.forEach((category) => {
-    storage.delete(`category_${category.id}`);
-  });
-  storage.delete(CATEGORIES_INDEX_KEY);
+export const clearAllCategories = async (): Promise<void> => {
+  const categories = await getAllCategories();
+  for (const category of categories) {
+    await storage.delete(`category_${category.id}`);
+  }
+  await storage.delete(CATEGORIES_INDEX_KEY);
 };
 
-export const initializeDefaultCategories = (): void => {
-  const currentIndexString = storage.getString(CATEGORIES_INDEX_KEY);
+export const initializeDefaultCategories = async (): Promise<void> => {
+  const currentIndexString = await storage.getString(CATEGORIES_INDEX_KEY);
   const categoriesIndex: string[] = currentIndexString
     ? JSON.parse(currentIndexString)
     : [];
   if (categoriesIndex.length === 0) {
-    DEFAULT_CATEGORIES.forEach((category) => {
-      addCategory(category);
-    });
+    for (const category of DEFAULT_CATEGORIES) {
+      await addCategory(category);
+    }
   }
 };

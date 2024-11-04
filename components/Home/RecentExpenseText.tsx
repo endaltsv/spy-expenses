@@ -1,11 +1,15 @@
 import { memo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTheme } from 'styled-components/native';
 
 function RecentExpenseText() {
   console.log('RecentExpenseText render.');
+  const theme = useTheme();
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Недавние траты</Text>
+      <Text style={[styles.title, { color: theme.colors.text }]}>
+        Недавние траты
+      </Text>
       <Text style={styles.viewAll}>СМ ВСЕ</Text>
     </View>
   );

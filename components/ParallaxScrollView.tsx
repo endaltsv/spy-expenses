@@ -6,12 +6,13 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
+import { useTheme } from 'styled-components/native';
 
 type Props = PropsWithChildren<{}>;
 
 export default function ParallaxScrollView({ children }: Props) {
   const scrollY = useSharedValue(0);
-
+  const theme = useTheme();
   const scrollHandler = useAnimatedScrollHandler((event) => {
     scrollY.value = event.contentOffset.y;
   });
@@ -31,7 +32,7 @@ export default function ParallaxScrollView({ children }: Props) {
     <Animated.ScrollView
       onScroll={scrollHandler}
       scrollEventThrottle={16}
-      style={styles.scrollView} // Белый фон для всего скролла
+      style={[styles.scrollView, { backgroundColor: theme.colors.background }]} // Белый фон для всего скролла
       contentContainerStyle={styles.contentContainer} // Минимальная высота для контента
     >
       <Animated.View style={parallaxStyle}>{children}</Animated.View>
@@ -42,7 +43,6 @@ export default function ParallaxScrollView({ children }: Props) {
 const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
-    backgroundColor: 'white',
   },
   contentContainer: {
     minHeight: '100%',

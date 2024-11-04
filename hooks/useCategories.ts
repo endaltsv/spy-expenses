@@ -15,13 +15,13 @@ const useCategories = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchCategories = useCallback(() => {
+  const fetchCategories = useCallback(async () => {
     setLoading(true);
     try {
-      let loadedCategories = getAllCategories();
+      let loadedCategories = await getAllCategories();
       if (loadedCategories.length === 0) {
-        initializeDefaultCategories();
-        loadedCategories = getAllCategories();
+        await initializeDefaultCategories();
+        loadedCategories = await getAllCategories();
       }
       setCategories(loadedCategories);
     } catch (err: any) {

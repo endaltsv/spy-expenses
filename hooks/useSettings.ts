@@ -1,7 +1,10 @@
-// src/hooks/useSettings.ts
-import { useState, useEffect } from 'react';
+// hooks/useSettings.ts
+import { useState, useEffect, useCallback } from 'react';
 import { UserSettings, defaultUserSettings } from '../models/UserSettings';
-import { loadUserSettings, saveUserSettings } from '@/services/settingsService';
+import {
+  loadUserSettings,
+  saveUserSettings,
+} from '../services/settingsService';
 
 const useSettings = () => {
   const [settings, setSettings] = useState<UserSettings>(defaultUserSettings);
@@ -9,25 +12,34 @@ const useSettings = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    try {
-      const loadedSettings = loadUserSettings();
-      setSettings(loadedSettings);
-    } catch (err) {
-      setError('Ошибка при загрузке настроек.');
-    } finally {
-      setLoading(false);
-    }
+    const fetchSettings = async () => {
+      try {
+        const loadedSettings = await loadUserSettings();
+        setSettings(loadedSettings);
+      } catch (err) {
+        console.error('Ошибка при загрузке настроек:', err);
+        setError('Ошибка при загрузке настроек.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSettings();
   }, []);
 
-  const updateSettings = (updatedSettings: Partial<UserSettings>) => {
-    const newSettings = { ...settings, ...updatedSettings };
-    setSettings(newSettings);
-    try {
-      saveUserSettings(newSettings);
-    } catch (err) {
-      setError('Ошибка при сохранении настроек.');
-    }
-  };
+  const updateSettings = useCallback(
+    async (updatedSettings: Partial<UserSettings>) => {
+      const newSettings = { ...settings, ...updatedSettings };
+      setSettings(newSettings);
+      try {
+        await saveUserSettings(newSettings);
+      } catch (err) {
+        console.error('Ошибка при сохранении настроек:', err);
+        setError('Ошибка при сохранении настроек.');
+      }
+    },
+    [settings],
+  );
 
   return {
     settings,
