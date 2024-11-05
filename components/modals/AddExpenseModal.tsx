@@ -15,8 +15,11 @@ import Modal from 'react-native-modal';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useExpensesContext } from '@/context/ExpensesContext';
 import { useCategoriesContext } from '@/context/CategoriesContext';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import SvgCalendar from '@/assets/images/calendar.svg';
+import Handle from './shared/Handle';
+import Category from './shared/Category';
+import Header from './shared/Header';
+import Input from './shared/Input';
 interface AddExpenseModalProps {
   visible: boolean;
   toggleModal: () => void;
@@ -109,7 +112,7 @@ function AddExpenseModal({ visible, toggleModal }: AddExpenseModalProps) {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <View style={styles.handle} />
+            <Handle />
             <ScrollView
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps="handled"
@@ -119,19 +122,23 @@ function AddExpenseModal({ visible, toggleModal }: AddExpenseModalProps) {
                   <Text style={styles.closeButton}>✕</Text>
                 </TouchableOpacity>
               </View>
-              <View style={styles.header}>
-                <Text style={styles.title}>Новая трата</Text>
-              </View>
+              <Header title="Новая трата" />
               <View style={styles.fieldContainer}>
                 <Text style={styles.labelSum}>Сумма</Text>
-                <TextInput
+                <Input
+                  amount={amount}
+                  placeholder=""
+                  setAmount={setAmount}
+                  keyboardType="numeric"
+                />
+                {/* <TextInput
                   style={styles.inputSum}
                   placeholder="Введите сумму"
                   keyboardType="numeric"
                   placeholderTextColor="#a1a1a1"
                   value={amount}
                   onChangeText={setAmount}
-                />
+                /> */}
               </View>
               <View style={styles.fieldContainer}>
                 <Text style={styles.label}>Название</Text>
@@ -163,6 +170,14 @@ function AddExpenseModal({ visible, toggleModal }: AddExpenseModalProps) {
                 <Text style={styles.label}>Категория</Text>
                 <View style={styles.categoryContainer}>
                   {categories.map((category) => (
+                    <Category
+                      category={category}
+                      active={selectedCategory === category.id}
+                      onPress={() => setSelectedCategory(category.id)}
+                    />
+                  ))}
+
+                  {/* {categories.map((category) => (
                     <TouchableOpacity
                       key={category.id}
                       style={
@@ -191,7 +206,7 @@ function AddExpenseModal({ visible, toggleModal }: AddExpenseModalProps) {
                         {capitalizeFirstLetter(category.name)}
                       </Text>
                     </TouchableOpacity>
-                  ))}
+                  ))} */}
                 </View>
               </View>
               <View style={styles.fieldContainer}>
@@ -225,14 +240,6 @@ const styles = StyleSheet.create({
     margin: 0,
     flex: 1,
     justifyContent: 'flex-end',
-  },
-  handle: {
-    left: '47%',
-    top: -25,
-    width: 40,
-    height: 5,
-    borderRadius: 2.5,
-    backgroundColor: '#ccc',
   },
   modalContent: {
     borderTopLeftRadius: 25,
