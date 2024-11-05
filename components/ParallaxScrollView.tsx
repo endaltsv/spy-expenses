@@ -11,6 +11,7 @@ import { useTheme } from 'styled-components/native';
 type Props = PropsWithChildren<{}>;
 
 export default function ParallaxScrollView({ children }: Props) {
+  console.log('ParallaxScrollView render.');
   const scrollY = useSharedValue(0);
   const theme = useTheme();
   const scrollHandler = useAnimatedScrollHandler((event) => {

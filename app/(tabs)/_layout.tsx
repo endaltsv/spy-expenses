@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { Tabs, useRouter } from 'expo-router'; // Подключение навигационного хука
-import TabBarSVG from '@/assets/tabbar.svg'; // Импорт вашего SVG
+import { Tabs, useRouter } from 'expo-router';
 import { useTheme } from 'styled-components/native';
-import AddExpenseModal from '@/components/Home/addExpense/Modal'; // Импорт модального окна
+import AddExpenseModal from '@/components/modals/AddExpenseModal';
+import TabBarSVG from '@/assets/tab-bar.svg';
 
 export default function TabLayout() {
   const [modalVisible, setModalVisible] = useState(false);
   const theme = useTheme();
-  const router = useRouter(); // Хук для управления навигацией
+  const router = useRouter();
 
   const toggleModal = () => {
     setModalVisible((prev) => !prev);
@@ -16,10 +16,8 @@ export default function TabLayout() {
 
   return (
     <View style={styles.container}>
-      {/* SVG как фон для таббара */}
       <TabBarSVG style={styles.tabBarSvg} />
 
-      {/* Интерактивные зоны для кнопок */}
       <TouchableOpacity
         style={styles.homeButtonArea}
         onPress={() => router.push('/')}
@@ -30,10 +28,8 @@ export default function TabLayout() {
       />
       <TouchableOpacity style={styles.addButtonArea} onPress={toggleModal} />
 
-      {/* Модальное окно для добавления расхода */}
       <AddExpenseModal visible={modalVisible} toggleModal={toggleModal} />
 
-      {/* Tabs для навигации */}
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -78,25 +74,25 @@ const styles = StyleSheet.create({
   homeButtonArea: {
     position: 'absolute',
     bottom: 20,
-    left: '15%', // Позиционирование для области кнопки "Главная"
-    width: 60, // Задайте размер области
+    left: '15%',
+    width: 60,
     height: 60,
     zIndex: 3,
   },
   exploreButtonArea: {
     position: 'absolute',
     bottom: 20,
-    right: '15%', // Позиционирование для области кнопки "Анализ"
+    right: '15%',
     width: 60,
     height: 60,
     zIndex: 3,
   },
   addButtonArea: {
     position: 'absolute',
-    bottom: 20, // Поднятие области выше таббара
+    bottom: 20,
     left: '50%',
-    transform: [{ translateX: -40 }], // Центрирование области нажатия
-    width: 80, // Увеличение области для лучшего нажатия
+    transform: [{ translateX: -40 }],
+    width: 80,
     height: '20%',
     zIndex: 3,
   },

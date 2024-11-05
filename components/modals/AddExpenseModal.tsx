@@ -3,22 +3,20 @@ import React, { useState } from 'react';
 import {
   TouchableOpacity,
   StyleSheet,
-  Image,
   View,
   Text,
   TextInput,
-  Platform,
   Keyboard,
   TouchableWithoutFeedback,
   Alert,
   ScrollView,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import DateTimePickerModal from 'react-native-modal-datetime-picker'; // Импорт новой библиотеки
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useExpensesContext } from '@/context/ExpensesContext';
 import { useCategoriesContext } from '@/context/CategoriesContext';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-
+import SvgCalendar from '@/assets/images/calendar.svg';
 interface AddExpenseModalProps {
   visible: boolean;
   toggleModal: () => void;
@@ -151,11 +149,7 @@ function AddExpenseModal({ visible, toggleModal }: AddExpenseModalProps) {
                   style={styles.dateTimeContainer}
                   onPress={showDatePicker}
                 >
-                  <Image
-                    source={require('../../../assets/images/calendar.svg')}
-                    style={styles.calendarIcon}
-                    tintColor={'#a1a1a1'}
-                  />
+                  <SvgCalendar style={styles.calendarIcon} />
                   <Text style={styles.dateTimeText}>{formattedDate}</Text>
                 </TouchableOpacity>
               </View>

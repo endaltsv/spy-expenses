@@ -1,8 +1,8 @@
 import { useExpensesContext } from '@/context/ExpensesContext';
-import formattingNumber from '@/utils/formattingNumber';
 import { memo } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { useTheme } from 'styled-components/native';
+import SvgPlus from '@/assets/images/plus.svg';
 
 function SpentToday() {
   console.log('SpentToday render.');
@@ -23,11 +23,7 @@ function SpentToday() {
             { backgroundColor: theme.colors.secondary },
           ]}
         >
-          <Image
-            source={require('../../../assets/images/plus.svg')}
-            style={styles.plusIcon}
-            tintColor={theme.colors.text}
-          />
+          <SvgPlus style={styles.plusIcon} />
         </View>
       </View>
     </View>
@@ -74,6 +70,7 @@ const styles = StyleSheet.create({
   plusIcon: {
     width: 11, // Задаем размер иконки плюсика
     height: 11,
+    color: 'white',
   },
   alignedRight: {
     marginRight: 16, // Позиционирование плюсика на том же уровне, что и текст

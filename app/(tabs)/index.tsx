@@ -1,31 +1,56 @@
-import MonthCategory from '@/components/Home/sections/MonthCategory';
-import RecentExpense from '@/components/Home/sections/RecentExpense';
-import SpentToday from '@/components/Home/sections/SpentToday';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { useSettingsContext } from '@/context/SettingsContext';
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useTheme } from 'styled-components/native';
+import LottieView from 'lottie-react-native';
+import React, { lazy, Suspense } from 'react';
+
+const MonthCategory = lazy(() => import('@/components/sections/MonthCategory'));
+const RecentExpense = lazy(() => import('@/components/sections/RecentExpense'));
+const SpentToday = lazy(() => import('@/components/sections/SpentToday'));
 
 export default function HomeScreen() {
-  const { settings } = useSettingsContext();
   const theme = useTheme();
+
   console.log('theme:', theme);
-  console.log('User settings:', settings);
   console.log('HomeScreen(index) render.');
 
   return (
-    <ParallaxScrollView>
-      <View
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
-      >
-        <View style={styles.mainContainer}>
-          <SpentToday />
-          <RecentExpense />
-          <MonthCategory />
+    <Suspense fallback={<LoadingAnimation />}>
+      <ParallaxScrollView>
+        <View
+          style={[
+            styles.container,
+            { backgroundColor: theme.colors.background },
+          ]}
+        >
+          <View style={styles.mainContainer}>
+            <SpentToday />
+            <RecentExpense />
+            <MonthCategory />
+          </View>
         </View>
-      </View>
-    </ParallaxScrollView>
+      </ParallaxScrollView>
+    </Suspense>
+  );
+}
+
+function LoadingAnimation() {
+  const theme = useTheme();
+
+  return (
+    <View
+      style={[
+        styles.loadingContainer,
+        { backgroundColor: theme.colors.background },
+      ]}
+    >
+      <LottieView
+        source={require('@/assets/animations/loading2.json')}
+        autoPlay
+        loop
+        style={[styles.lottieAnimation]}
+      />
+    </View>
   );
 }
 
@@ -34,11 +59,20 @@ const styles = StyleSheet.create({
     marginTop: '10%',
     paddingBottom: '30%',
   },
-
   mainContainer: {
     paddingHorizontal: '5%',
   },
   monthContainer: {
     paddingHorizontal: '5%',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent', // прозрачный фон
+  },
+  lottieAnimation: {
+    width: 200,
+    height: 200,
   },
 });

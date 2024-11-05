@@ -23,7 +23,6 @@ interface ExpenseCardProps {
   expenseName: string;
   expenseAmount: number;
   expenseDate: string;
-  expenseCategory: string;
   expenseIcon: string | undefined;
   onDelete: () => void;
 }
@@ -32,7 +31,6 @@ const ExpenseCard = ({
   expenseName,
   expenseAmount,
   expenseDate,
-  expenseCategory,
   expenseIcon,
   onDelete,
 }: ExpenseCardProps) => {
@@ -177,7 +175,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  // Style for Image component (PNG/JPG)
   iconImage: {
     width: 24,
     height: 24,

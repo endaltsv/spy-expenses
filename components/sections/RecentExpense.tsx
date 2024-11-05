@@ -1,8 +1,8 @@
 // src/components/RecentExpense/index.tsx
 import React, { memo, useMemo, useCallback } from 'react';
 import { useExpensesContext } from '@/context/ExpensesContext';
-import ExpenseCard from '../ExpenseCard';
-import RecentExpenseText from '../RecentExpenseText';
+import ExpenseCard from '../cards/ExpenseCard';
+import RecentExpenseText from '../texts/RecentExpenseLabel';
 import { useCategoriesContext } from '@/context/CategoriesContext';
 
 const RecentExpense = () => {
@@ -11,16 +11,12 @@ const RecentExpense = () => {
 
   console.log('RecentExpense render.');
 
-  // Memoize the expenses data
-  const expenses = useMemo(() => getLastFourExpenses(), [getLastFourExpenses]);
-
-  // Memoize the render of ExpenseCards
+  const expenses = getLastFourExpenses;
   const expenseCards = useMemo(
     () =>
       expenses.map((expense) => {
         const category = findCategoryById(expense.categoryId);
         const expenseIcon = category ? category.icon : undefined;
-        const expenseCategoryName = category ? category.name : 'Без категории';
 
         // Memoize the delete handler
         const handleDelete = () => {
@@ -33,7 +29,6 @@ const RecentExpense = () => {
             expenseName={expense.name}
             expenseAmount={expense.amount}
             expenseDate={expense.dateTime}
-            expenseCategory={expenseCategoryName}
             expenseIcon={expenseIcon}
             onDelete={handleDelete}
           />
