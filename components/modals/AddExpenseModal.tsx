@@ -1,12 +1,10 @@
-// Modal.tsx
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   TouchableOpacity,
   StyleSheet,
   View,
   Text,
   TextInput,
-  Keyboard,
   TouchableWithoutFeedback,
   Alert,
   ScrollView,
@@ -19,32 +17,29 @@ import SvgCalendar from '@/assets/images/calendar.svg';
 import Handle from './shared/Handle';
 import Category from './shared/Category';
 import Header from './shared/Header';
-import Input from './shared/Input';
+
 interface AddExpenseModalProps {
   visible: boolean;
   toggleModal: () => void;
 }
 
 function AddExpenseModal({ visible, toggleModal }: AddExpenseModalProps) {
-  console.log('AddExpenseModal(Modal) render.');
-  const { addExpense, getCategoryIdByName } = useExpensesContext();
+  const { addExpense } = useExpensesContext();
   const { categories } = useCategoriesContext();
 
+  const scrollViewRef = useRef<ScrollView>(null);
+  const commentInputRef = useRef<TextInput>(null);
+
   const [name, setName] = useState<string>('');
-  const [amount, setAmount] = useState<string>(''); // Храним сумму как строку для удобства ввода
+  const [amount, setAmount] = useState<string>('');
   const [date, setDate] = useState<Date>(new Date());
   const [isDatePickerVisible, setDatePickerVisibility] =
     useState<boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [comment, setComment] = useState<string>('');
 
-  const showDatePicker = () => {
-    setDatePickerVisibility(true);
-  };
-
-  const hideDatePicker = () => {
-    setDatePickerVisibility(false);
-  };
+  const showDatePicker = () => setDatePickerVisibility(true);
+  const hideDatePicker = () => setDatePickerVisibility(false);
 
   const handleConfirmDate = (selectedDate: Date) => {
     setDate(selectedDate);
@@ -53,13 +48,7 @@ function AddExpenseModal({ visible, toggleModal }: AddExpenseModalProps) {
 
   const formattedDate = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
 
-  const capitalizeFirstLetter = (string: string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  };
-
   const handleAddExpense = () => {
-    console.log('handleAddExpense');
-
     if (name.trim() === '' || amount.trim() === '' || !selectedCategory) {
       Alert.alert('Ошибка', 'Пожалуйста, заполните все обязательные поля.');
       return;
@@ -70,7 +59,6 @@ function AddExpenseModal({ visible, toggleModal }: AddExpenseModalProps) {
       return;
     }
 
-    console.log(selectedCategory);
     const newExpense = {
       name: name.trim(),
       amount: parsedAmount,
@@ -78,7 +66,6 @@ function AddExpenseModal({ visible, toggleModal }: AddExpenseModalProps) {
       categoryId: selectedCategory,
       comment: comment.trim() !== '' ? comment.trim() : undefined,
     };
-    console.log(newExpense);
 
     addExpense(newExpense);
 
@@ -91,14 +78,16 @@ function AddExpenseModal({ visible, toggleModal }: AddExpenseModalProps) {
     toggleModal();
   };
 
+  const scrollToEndWithOffset = () => {
+    scrollViewRef.current?.scrollToEnd({ animated: true });
+  };
+
   return (
     <Modal
       isVisible={visible}
       animationIn="slideInUp"
       animationOut="slideOutDown"
-      animationInTiming={300}
-      animationOutTiming={300}
-      coverScreen={true}
+      coverScreen={false}
       style={styles.modalContainer}
       hasBackdrop={true}
       backdropColor="white"
@@ -109,36 +98,27 @@ function AddExpenseModal({ visible, toggleModal }: AddExpenseModalProps) {
       onSwipeComplete={toggleModal}
       swipeThreshold={150}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <TouchableWithoutFeedback>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Handle />
             <ScrollView
+              ref={scrollViewRef}
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps="handled"
+              contentContainerStyle={styles.scrollViewContent}
             >
-              <View style={styles.closeButtonContainer}>
-                <TouchableOpacity onPress={toggleModal}>
-                  <Text style={styles.closeButton}>✕</Text>
-                </TouchableOpacity>
-              </View>
               <Header title="Новая трата" />
               <View style={styles.fieldContainer}>
                 <Text style={styles.labelSum}>Сумма</Text>
-                <Input
-                  amount={amount}
-                  placeholder=""
-                  setAmount={setAmount}
-                  keyboardType="numeric"
-                />
-                {/* <TextInput
+                <TextInput
                   style={styles.inputSum}
                   placeholder="Введите сумму"
-                  keyboardType="numeric"
                   placeholderTextColor="#a1a1a1"
                   value={amount}
                   onChangeText={setAmount}
-                /> */}
+                  keyboardType="numeric"
+                />
               </View>
               <View style={styles.fieldContainer}>
                 <Text style={styles.label}>Название</Text>
@@ -171,52 +151,24 @@ function AddExpenseModal({ visible, toggleModal }: AddExpenseModalProps) {
                 <View style={styles.categoryContainer}>
                   {categories.map((category) => (
                     <Category
+                      key={category.id}
                       category={category}
                       active={selectedCategory === category.id}
                       onPress={() => setSelectedCategory(category.id)}
                     />
                   ))}
-
-                  {/* {categories.map((category) => (
-                    <TouchableOpacity
-                      key={category.id}
-                      style={
-                        selectedCategory === category.id
-                          ? styles.selectedCategoryButton
-                          : styles.categoryButton
-                      }
-                      onPress={() => setSelectedCategory(category.id)}
-                    >
-                      <MaterialCommunityIcons
-                        name={category.icon}
-                        size={16}
-                        style={
-                          selectedCategory === category.id
-                            ? styles.selectedCategoryIcon
-                            : styles.categoryIcon
-                        }
-                      />
-                      <Text
-                        style={
-                          selectedCategory === category.id
-                            ? styles.categoryTextSelected
-                            : styles.categoryText
-                        }
-                      >
-                        {capitalizeFirstLetter(category.name)}
-                      </Text>
-                    </TouchableOpacity>
-                  ))} */}
                 </View>
               </View>
               <View style={styles.fieldContainer}>
                 <Text style={styles.label}>Комментарий</Text>
                 <TextInput
+                  ref={commentInputRef}
                   style={[styles.input, styles.commentInput]}
                   multiline
                   placeholderTextColor="#a1a1a1"
                   value={comment}
                   onChangeText={setComment}
+                  onFocus={scrollToEndWithOffset} // Прокрутка до конца при фокусе
                 />
               </View>
               <TouchableOpacity
@@ -252,26 +204,8 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     marginBottom: 1,
   },
-  closeButtonContainer: {
-    display: 'none',
-    position: 'absolute',
-    top: 63,
-    right: 26,
-    zIndex: 1,
-  },
-  closeButton: {
-    color: 'white',
-  },
-  header: {
-    flexDirection: 'row',
-    marginTop: 54,
-    marginBottom: 2,
-  },
-  title: {
-    color: 'white',
-    lineHeight: 28,
-    fontSize: 24,
-    fontFamily: 'SFPro-Bold',
+  scrollViewContent: {
+    paddingBottom: '95%',
   },
   fieldContainer: {
     marginTop: 22,

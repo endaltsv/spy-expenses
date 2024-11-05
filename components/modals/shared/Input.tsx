@@ -1,45 +1,75 @@
-import { KeyboardType, StyleSheet, Text, TextInput, View } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { KeyboardType, StyleSheet, TextInput, View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 interface Props {
-  amount: string;
+  value?: string;
   placeholder: string;
   keyboardType?: KeyboardType;
-  setAmount: (value: string) => void;
+  active?: boolean;
+  setAmount?: (value: string) => void;
 }
 
 export default function Input({
-  amount,
+  value,
   placeholder,
   keyboardType,
+  active,
   setAmount,
 }: Props) {
   return (
-    <TextInput
-      style={styles.inputSum}
-      placeholder={placeholder}
-      keyboardType={keyboardType && 'default'}
-      placeholderTextColor="#a1a1a1"
-      value={amount}
-      onChangeText={setAmount}
-    />
+    <TouchableOpacity onPress={() => console.log('123')}>
+      <View
+        style={active ? styles.inputContainerActive : styles.inputContainer}
+      >
+        <TextInput
+          editable={false}
+          style={styles.input}
+          placeholder={placeholder}
+          keyboardType={keyboardType || 'default'}
+          placeholderTextColor="#a1a1a1"
+          value={value}
+          onChangeText={setAmount}
+        />
+        {!value && (
+          <MaterialCommunityIcons
+            name="chevron-down"
+            size={24}
+            color="#a1a1a1"
+            style={styles.icon}
+          />
+        )}
+      </View>
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  labelSum: {
-    color: '#d3fd51',
-    fontFamily: 'SFPro-Regular',
-    fontSize: 16,
-    lineHeight: 20,
-    marginBottom: 12,
-  },
-  inputSum: {
-    height: 44,
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#1f1f1f',
     borderRadius: 8,
     paddingHorizontal: 12,
-    color: 'white',
+    borderColor: '#363636',
+    borderWidth: 1,
+  },
+  inputContainerActive: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1f1f1f',
+    borderRadius: 8,
+    paddingHorizontal: 12,
     borderColor: '#d3fd51',
     borderWidth: 1,
+  },
+  input: {
+    flex: 1,
+    height: 44,
+    color: 'white',
+  },
+  icon: {
+    position: 'absolute',
+    right: 12,
   },
 });

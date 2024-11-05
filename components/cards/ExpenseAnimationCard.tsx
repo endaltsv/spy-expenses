@@ -18,6 +18,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from 'styled-components/native';
+import formattingDate from '@/utils/formattingDate';
 
 interface ExpenseCardProps {
   expenseName: string;
@@ -27,19 +28,23 @@ interface ExpenseCardProps {
   onDelete: () => void;
 }
 
-const ExpenseCard = ({
+const ExpenseAnimationCard = ({
   expenseName,
   expenseAmount,
   expenseDate,
   expenseIcon,
   onDelete,
 }: ExpenseCardProps) => {
-  console.log('ExpenseCard render.');
+  console.log('ExpenseAnimationCard render.');
   const theme = useTheme();
   const { width } = useWindowDimensions();
   const formattedAmount = useMemo(
     () => formattingNumber(expenseAmount),
     [expenseAmount],
+  );
+  const formattedDate = useMemo(
+    () => formattingDate(expenseDate),
+    [expenseDate],
   );
 
   const translateX = useSharedValue(0);
@@ -118,7 +123,7 @@ const ExpenseCard = ({
             <Text style={[styles.expenseName, { color: theme.colors.text }]}>
               {expenseName}
             </Text>
-            <Text style={[styles.expenseDate]}>{expenseDate}</Text>
+            <Text style={[styles.expenseDate]}>{formattedDate}</Text>
           </View>
           <View>
             <Text style={[styles.expenseAmount, { color: theme.colors.text }]}>
@@ -131,7 +136,7 @@ const ExpenseCard = ({
   );
 };
 
-export default memo(ExpenseCard);
+export default memo(ExpenseAnimationCard);
 
 const styles = StyleSheet.create({
   container: {

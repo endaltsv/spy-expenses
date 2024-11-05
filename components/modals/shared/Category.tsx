@@ -8,14 +8,20 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Category as ModelCategory } from '@/models/Category';
-
+import SvgClose from '@/assets/images/close.svg';
 interface CategoryProps {
   category: ModelCategory;
+  closeVisible?: boolean;
   active: boolean;
   onPress?: () => void;
 }
 
-const Category: React.FC<CategoryProps> = ({ category, active, onPress }) => {
+const Category: React.FC<CategoryProps> = ({
+  category,
+  active,
+  onPress,
+  closeVisible,
+}) => {
   const capitalizeFirstLetter = (text: string) =>
     text.charAt(0).toUpperCase() + text.slice(1);
 
@@ -35,6 +41,14 @@ const Category: React.FC<CategoryProps> = ({ category, active, onPress }) => {
         >
           {capitalizeFirstLetter(category.name)}
         </Text>
+        {closeVisible && (
+          <TouchableOpacity
+            onPress={() => console.log('close')}
+            style={{ marginLeft: 8, marginTop: 1 }}
+          >
+            <SvgClose />
+          </TouchableOpacity>
+        )}
       </TouchableOpacity>
     </View>
   );

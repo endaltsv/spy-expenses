@@ -1,6 +1,9 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 
 export default function CalendarScreen() {
-  return <Text>Сюда не смотрим</Text>;
+  return;
+  <View style={{ backgroundColor: 'red' }}>
+    <Text>Сюда не смотрим</Text>;
+  </View>;
 }

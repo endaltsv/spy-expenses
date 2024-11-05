@@ -1,31 +1,12 @@
 import React, { memo, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTheme } from 'styled-components/native';
-import ExpenseModal from '@/components/modals/ExpensesModal';
+import ExpenseModal from '@/components/modals/AllExpensesModal';
 
 function RecentExpenseText() {
   console.log('RecentExpenseText render.');
   const theme = useTheme();
   const [modalVisible, setModalVisible] = useState(false);
-
-  const expenses = [
-    {
-      id: '1',
-      name: 'Бургер Кинг',
-      amount: 1789,
-      date: 'Сегодня',
-      icon: 'food',
-    },
-    {
-      id: '2',
-      name: 'Макдональдс',
-      amount: 2389,
-      date: 'Сегодня',
-      icon: 'food',
-    },
-    { id: '3', name: 'Метро', amount: 2389, date: 'Сегодня', icon: 'train' },
-    // добавьте больше элементов для тестирования
-  ];
 
   const handleOpenModal = () => setModalVisible(true);
   const handleCloseModal = () => setModalVisible(false);
@@ -41,11 +22,7 @@ function RecentExpenseText() {
         </TouchableOpacity>
       </View>
 
-      <ExpenseModal
-        visible={modalVisible}
-        onClose={handleCloseModal}
-        expenses={expenses}
-      />
+      <ExpenseModal visible={modalVisible} onClose={handleCloseModal} />
     </View>
   );
 }

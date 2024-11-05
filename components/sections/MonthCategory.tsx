@@ -1,4 +1,4 @@
-import MonthCategoryText from '../texts/MonthCategoryLabel';
+import MonthCategoryText from './MonthCategoryLabel';
 import { ScrollView, StyleSheet, View, Dimensions } from 'react-native';
 import MonthCategoryCard from '../cards/MonthCategoryCard';
 import { useCategoriesContext } from '@/context/CategoriesContext';

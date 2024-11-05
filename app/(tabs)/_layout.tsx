@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Tabs, useRouter } from 'expo-router';
 import { useTheme } from 'styled-components/native';
 import AddExpenseModal from '@/components/modals/AddExpenseModal';
-import TabBarSVG from '@/assets/tab-bar.svg';
+import TabBarSVGHome from '@/assets/tab-bar-home.svg';
+import TabBarSVGExplore from '@/assets/tab-bar-explore.svg';
 
 export default function TabLayout() {
   const [modalVisible, setModalVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState('index'); // Начальное состояние - 'index'
   const theme = useTheme();
   const router = useRouter();
 
@@ -14,9 +16,18 @@ export default function TabLayout() {
     setModalVisible((prev) => !prev);
   };
 
+  // Обработчик изменения вкладки
+  const handleTabChange = (route) => {
+    setActiveTab(route.name);
+  };
+
   return (
     <View style={styles.container}>
-      <TabBarSVG style={styles.tabBarSvg} />
+      {activeTab === 'index' ? (
+        <TabBarSVGHome style={styles.tabBarSvg} />
+      ) : (
+        <TabBarSVGExplore style={styles.tabBarSvg} />
+      )}
 
       <TouchableOpacity
         style={styles.homeButtonArea}
@@ -31,6 +42,10 @@ export default function TabLayout() {
       <AddExpenseModal visible={modalVisible} toggleModal={toggleModal} />
 
       <Tabs
+        screenListeners={{
+          state: (e) =>
+            handleTabChange(e.data.state.routes[e.data.state.index]),
+        }}
         screenOptions={{
           headerShown: false,
           tabBarStyle: [
@@ -98,11 +113,11 @@ const styles = StyleSheet.create({
   },
   tabBar: {
     position: 'absolute',
-    height: 80,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    borderTopWidth: 0,
-    elevation: 10,
-    overflow: 'hidden',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    width: '100%',
+    height: 'auto',
+    zIndex: 1,
   },
 });

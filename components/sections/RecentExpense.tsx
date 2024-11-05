@@ -1,9 +1,10 @@
 // src/components/RecentExpense/index.tsx
 import React, { memo, useMemo, useCallback } from 'react';
 import { useExpensesContext } from '@/context/ExpensesContext';
-import ExpenseCard from '../cards/ExpenseCard';
-import RecentExpenseText from '../texts/RecentExpenseLabel';
+import ExpenseAnimationCard from '../cards/ExpenseAnimationCard';
+import RecentExpenseText from './RecentExpenseLabel';
 import { useCategoriesContext } from '@/context/CategoriesContext';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const RecentExpense = () => {
   const { getLastFourExpenses, deleteExpense } = useExpensesContext();
@@ -24,14 +25,16 @@ const RecentExpense = () => {
         };
 
         return (
-          <ExpenseCard
-            key={expense.id}
-            expenseName={expense.name}
-            expenseAmount={expense.amount}
-            expenseDate={expense.dateTime}
-            expenseIcon={expenseIcon}
-            onDelete={handleDelete}
-          />
+          <TouchableOpacity onPress={() => console.log(expense.id)}>
+            <ExpenseAnimationCard
+              key={expense.id}
+              expenseName={expense.name}
+              expenseAmount={expense.amount}
+              expenseDate={expense.dateTime}
+              expenseIcon={expenseIcon}
+              onDelete={handleDelete}
+            />
+          </TouchableOpacity>
         );
       }),
     [expenses, findCategoryById, deleteExpense],

@@ -1,33 +1,26 @@
 // ExpenseModal.tsx
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  FlatList,
-  TextInput,
-} from 'react-native';
+import { View, StyleSheet, TextInput } from 'react-native';
 import { useTheme } from 'styled-components/native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Modal from 'react-native-modal';
-import { Expense } from '@/models/Expense';
 import Handle from './shared/Handle';
 import Category from './shared/Category';
 import { useCategoriesContext } from '@/context/CategoriesContext';
 import Header from './shared/Header';
 import Input from './shared/Input';
+import { useExpensesContext } from '@/context/ExpensesContext';
+import ExpenseCard from './shared/Expense';
 
 interface ExpenseModalProps {
   visible: boolean;
   onClose: () => void;
-  expenses: Expense[];
 }
 
-const ExpenseModal = ({ visible, onClose, expenses }: ExpenseModalProps) => {
+const ExpenseModal = ({ visible, onClose }: ExpenseModalProps) => {
   const theme = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const { categories } = useCategoriesContext();
+  const { expenses } = useExpensesContext();
 
   return (
     <Modal
@@ -53,10 +46,16 @@ const ExpenseModal = ({ visible, onClose, expenses }: ExpenseModalProps) => {
           />
 
           <View style={styles.categoryContainer}>
-            <Category category={categories[2]} active={true} />
+            <Category
+              category={categories[2]}
+              active={true}
+              closeVisible={true}
+            />
           </View>
           <Header title="Траты за" />
-          <Input />
+          <Input placeholder={'5 Ноября - 10 Ноября'} active={true} />
+          <Header title="Сегодня" />
+          <ExpenseCard expense={expenses[0]} />
         </View>
       </View>
     </Modal>
