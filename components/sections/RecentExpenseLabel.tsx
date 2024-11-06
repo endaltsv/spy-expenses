@@ -16,7 +16,7 @@ function RecentExpenseText() {
   return (
     <View>
       <View style={styles.container}>
-        <Header title="Недавние расходы" size={3} />
+        <Header title="Недавние траты" size={3} />
         <TouchableOpacity onPress={handleOpenModal}>
           <Subtitle title="СМ ВСЕ" size={2} />
         </TouchableOpacity>
