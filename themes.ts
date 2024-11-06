@@ -28,6 +28,7 @@ export const MainTheme: DefaultTheme = {
   colors: {
     primary: '#d3fd51',
     secondary: '#1f1f1f',
+    accent: '#979797',
     background: '#1a1a1a',
     text: '#ffffff',
     border: 'rgb(39, 39, 41)',

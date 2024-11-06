@@ -27,6 +27,7 @@ const ExpenseModal = ({ visible, onClose }: ExpenseModalProps) => {
       isVisible={visible}
       style={styles.modalContainer}
       swipeDirection="down"
+      onSwipeComplete={onClose}
       swipeThreshold={150}
     >
       <View style={styles.modalContainer}>

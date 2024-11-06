@@ -1,7 +1,7 @@
 import React, { memo, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTheme } from 'styled-components/native';
-import ExpenseModal from '@/components/modals/AllExpensesModal';
+import AllExpensesModal from '@/components/modals/AllExpensesModal';
 import Header from '../ui/Header';
 import Subtitle from '../ui/Subtitle';
 
@@ -22,7 +22,7 @@ function RecentExpenseText() {
         </TouchableOpacity>
       </View>
 
-      <ExpenseModal visible={modalVisible} onClose={handleCloseModal} />
+      <AllExpensesModal visible={modalVisible} onClose={handleCloseModal} />
     </View>
   );
 }

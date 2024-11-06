@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import {
   View,
   Text,
@@ -10,16 +10,25 @@ import {
 import { useTheme } from 'styled-components/native';
 import SvgDots from '../../assets/images/dot-horizontal.svg';
 import Header from '../ui/Header';
+import AllCategoriesModal from '../modals/AllCategoriesModal';
 
 function MonthCategoryLabel() {
   console.log('MonthCategoryText render.');
   const theme = useTheme();
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleOpenModal = () => setModalVisible(true);
+  const handleCloseModal = () => setModalVisible(false);
+
   return (
-    <View style={styles.container}>
-      <Header title="Категории месяца" size={3} />
-      <TouchableOpacity>
-        <SvgDots />
-      </TouchableOpacity>
+    <View>
+      <View style={styles.container}>
+        <Header title="Категории месяца" size={3} />
+        <TouchableOpacity onPress={handleOpenModal}>
+          <SvgDots />
+        </TouchableOpacity>
+      </View>
+      <AllCategoriesModal visible={modalVisible} onClose={handleCloseModal} />
     </View>
   );
 }
@@ -30,18 +39,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-
     marginTop: 32,
     marginBottom: 12,
   },
-  title: {
-    fontSize: 20,
-    lineHeight: 24,
-    fontFamily: 'SFPro-Bold',
-    color: '#000', // черный цвет для основного текста
-  },
   image: {
-    width: 20, // размер изображения с точками
+    width: 20,
     height: 20,
   },
 });

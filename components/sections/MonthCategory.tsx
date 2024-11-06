@@ -53,7 +53,7 @@ export default function MonthCategory() {
     );
   }, [categories, currentMonthExpenses]);
 
-  console.log('MonthCategory render.', categoryData);
+  console.log('MonthCategory render.');
   return (
     <View>
       <View>
