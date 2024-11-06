@@ -6,7 +6,7 @@ import Modal from 'react-native-modal';
 import Handle from './shared/Handle';
 import Category from './shared/Category';
 import { useCategoriesContext } from '@/context/CategoriesContext';
-import Header from './shared/Header';
+import Header from '../ui/Header';
 import Input from './shared/Input';
 import { useExpensesContext } from '@/context/ExpensesContext';
 import ExpenseCard from './shared/Expense';

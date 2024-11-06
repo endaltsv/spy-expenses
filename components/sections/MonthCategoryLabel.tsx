@@ -1,22 +1,29 @@
 import { memo } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Touchable,
+  TouchableOpacity,
+} from 'react-native';
 import { useTheme } from 'styled-components/native';
-function MonthCategoryText() {
+import SvgDots from '../../assets/images/dot-horizontal.svg';
+import Header from '../ui/Header';
+
+function MonthCategoryLabel() {
   console.log('MonthCategoryText render.');
   const theme = useTheme();
   return (
     <View style={styles.container}>
-      <Text style={[styles.title, { color: theme.colors.text }]}>
-        Категории месяца
-      </Text>
-      <Image
-        source={require('../../assets/images/dots.png')}
-        style={styles.image}
-      />
+      <Header title="Категории месяца" size={3} />
+      <TouchableOpacity>
+        <SvgDots />
+      </TouchableOpacity>
     </View>
   );
 }
-export default memo(MonthCategoryText);
+export default memo(MonthCategoryLabel);
 
 const styles = StyleSheet.create({
   container: {

@@ -8,6 +8,7 @@ export default function useLoadFonts() {
     'SFPro-Bold': require('../assets/fonts/SFPro-Bold.otf'),
     'SFPro-Regular': require('../assets/fonts/SFPro-Regular.otf'),
     'SFPro-Medium': require('../assets/fonts/SFPro-Medium.otf'),
+    'SFPro-Semibold': require('../assets/fonts/SFPro-Semibold.otf'),
   });
 
   const [isReady, setIsReady] = useState(false);

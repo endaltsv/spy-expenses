@@ -1,4 +1,4 @@
-import MonthCategoryText from './MonthCategoryLabel';
+import MonthCategoryLabel from './MonthCategoryLabel';
 import { ScrollView, StyleSheet, View, Dimensions } from 'react-native';
 import MonthCategoryCard from '../cards/MonthCategoryCard';
 import { useCategoriesContext } from '@/context/CategoriesContext';
@@ -57,7 +57,7 @@ export default function MonthCategory() {
   return (
     <View>
       <View>
-        <MonthCategoryText />
+        <MonthCategoryLabel />
       </View>
       <ScrollView
         horizontal

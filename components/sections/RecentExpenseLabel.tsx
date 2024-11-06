@@ -2,6 +2,8 @@ import React, { memo, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTheme } from 'styled-components/native';
 import ExpenseModal from '@/components/modals/AllExpensesModal';
+import Header from '../ui/Header';
+import Subtitle from '../ui/Subtitle';
 
 function RecentExpenseText() {
   console.log('RecentExpenseText render.');
@@ -14,11 +16,9 @@ function RecentExpenseText() {
   return (
     <View>
       <View style={styles.container}>
-        <Text style={[styles.title, { color: theme.colors.text }]}>
-          Недавние траты
-        </Text>
+        <Header title="Недавние расходы" size={3} />
         <TouchableOpacity onPress={handleOpenModal}>
-          <Text style={styles.viewAll}>СМ ВСЕ</Text>
+          <Subtitle title="СМ ВСЕ" size={2} />
         </TouchableOpacity>
       </View>
 
@@ -35,12 +35,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 8,
-  },
-  title: {
-    fontSize: 20,
-    fontFamily: 'SFPro-Bold',
-    lineHeight: 24,
-    color: '#000',
   },
   viewAll: {
     color: '#6f6f6f',

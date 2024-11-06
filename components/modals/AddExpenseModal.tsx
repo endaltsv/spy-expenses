@@ -16,7 +16,7 @@ import { useCategoriesContext } from '@/context/CategoriesContext';
 import SvgCalendar from '@/assets/images/calendar.svg';
 import Handle from './shared/Handle';
 import Category from './shared/Category';
-import Header from './shared/Header';
+import Header from '../ui/Header';
 
 interface AddExpenseModalProps {
   visible: boolean;
