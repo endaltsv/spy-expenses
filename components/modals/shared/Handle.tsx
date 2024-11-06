@@ -1,9 +1,12 @@
+import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-export default function Handle() {
+function Handle() {
   console.log('Handle render.');
   return <View style={styles.handle} />;
 }
+
+export default memo(Handle);
 
 const styles = StyleSheet.create({
   handle: {

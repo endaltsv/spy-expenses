@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react';
+import { memo, PropsWithChildren, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, {
   interpolate,
@@ -10,36 +10,50 @@ import { useTheme } from 'styled-components/native';
 
 type Props = PropsWithChildren<{}>;
 
-export default function ParallaxScrollView({ children }: Props) {
+function ParallaxScrollView({ children }: Props) {
   console.log('ParallaxScrollView render.');
-  const scrollY = useSharedValue(0);
   const theme = useTheme();
+  const scrollY = useSharedValue(0);
+
+  // Memoize scroll handler to prevent re-creation on every render
   const scrollHandler = useAnimatedScrollHandler((event) => {
     scrollY.value = event.contentOffset.y;
   });
 
-  const parallaxStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateY: interpolate(scrollY.value, [0, 200], [0, -50], 'clamp'),
-      },
-      {
-        scale: interpolate(scrollY.value, [0, 200], [1, 1.1], 'clamp'),
-      },
-    ],
-  }));
+  // Memoize parallax style calculation
+  const parallaxStyle = useAnimatedStyle(
+    () => ({
+      transform: [
+        {
+          translateY: interpolate(scrollY.value, [0, 200], [0, -50], 'clamp'),
+        },
+        {
+          scale: interpolate(scrollY.value, [0, 200], [1, 1.1], 'clamp'),
+        },
+      ],
+    }),
+    [scrollY],
+  );
+
+  // Memoize styles based on theme
+  const scrollViewStyle = useCallback(
+    () => [styles.scrollView, { backgroundColor: theme.colors.background }],
+    [theme.colors.background],
+  );
 
   return (
     <Animated.ScrollView
       onScroll={scrollHandler}
       scrollEventThrottle={16}
-      style={[styles.scrollView, { backgroundColor: theme.colors.background }]} // Белый фон для всего скролла
-      contentContainerStyle={styles.contentContainer} // Минимальная высота для контента
+      style={scrollViewStyle()}
+      contentContainerStyle={styles.contentContainer}
     >
       <Animated.View style={parallaxStyle}>{children}</Animated.View>
     </Animated.ScrollView>
   );
 }
+
+export default memo(ParallaxScrollView);
 
 const styles = StyleSheet.create({
   scrollView: {

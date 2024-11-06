@@ -1,11 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { memo, useState, useRef, useCallback } from 'react';
 import {
   TouchableOpacity,
   StyleSheet,
   View,
   Text,
   TextInput,
-  TouchableWithoutFeedback,
   Alert,
   ScrollView,
 } from 'react-native';
@@ -23,7 +22,7 @@ interface AddExpenseModalProps {
   toggleModal: () => void;
 }
 
-function AddExpenseModal({ visible, toggleModal }: AddExpenseModalProps) {
+const AddExpenseModal = ({ visible, toggleModal }: AddExpenseModalProps) => {
   console.log('AddExpenseModal render.');
   const { addExpense } = useExpensesContext();
   const { categories } = useCategoriesContext();
@@ -39,17 +38,18 @@ function AddExpenseModal({ visible, toggleModal }: AddExpenseModalProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [comment, setComment] = useState<string>('');
 
-  const showDatePicker = () => setDatePickerVisibility(true);
-  const hideDatePicker = () => setDatePickerVisibility(false);
+  const showDatePicker = useCallback(() => setDatePickerVisibility(true), []);
+  const hideDatePicker = useCallback(() => setDatePickerVisibility(false), []);
 
-  const handleConfirmDate = (selectedDate: Date) => {
-    setDate(selectedDate);
-    hideDatePicker();
-  };
+  const handleConfirmDate = useCallback(
+    (selectedDate: Date) => {
+      setDate(selectedDate);
+      hideDatePicker();
+    },
+    [hideDatePicker],
+  );
 
-  const formattedDate = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
-
-  const handleAddExpense = () => {
+  const handleAddExpense = useCallback(() => {
     if (name.trim() === '' || amount.trim() === '' || !selectedCategory) {
       Alert.alert('Ошибка', 'Пожалуйста, заполните все обязательные поля.');
       return;
@@ -70,6 +70,7 @@ function AddExpenseModal({ visible, toggleModal }: AddExpenseModalProps) {
 
     addExpense(newExpense);
 
+    // Clear inputs
     setName('');
     setAmount('');
     setSelectedCategory(null);
@@ -77,11 +78,13 @@ function AddExpenseModal({ visible, toggleModal }: AddExpenseModalProps) {
     setDate(new Date());
 
     toggleModal();
-  };
+  }, [name, amount, selectedCategory, comment, date, addExpense, toggleModal]);
 
-  const scrollToEndWithOffset = () => {
-    scrollViewRef.current?.scrollToEnd({ animated: true });
-  };
+  const formattedDate = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
+
+  const handleCategoryPress = useCallback((id: string) => {
+    setSelectedCategory(id);
+  }, []);
 
   return (
     <Modal
@@ -99,94 +102,93 @@ function AddExpenseModal({ visible, toggleModal }: AddExpenseModalProps) {
       onSwipeComplete={toggleModal}
       swipeThreshold={150}
     >
-      <TouchableWithoutFeedback>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Handle />
-            <ScrollView
-              ref={scrollViewRef}
-              showsVerticalScrollIndicator={false}
-              keyboardShouldPersistTaps="handled"
-              contentContainerStyle={styles.scrollViewContent}
-            >
-              <Header title="Новая трата" />
-              <View style={styles.fieldContainer}>
-                <Text style={styles.labelSum}>Сумма</Text>
-                <TextInput
-                  style={styles.inputSum}
-                  placeholder="Введите сумму"
-                  placeholderTextColor="#a1a1a1"
-                  value={amount}
-                  onChangeText={setAmount}
-                  keyboardType="numeric"
-                />
-              </View>
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>Название</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Введите название"
-                  placeholderTextColor="#a1a1a1"
-                  value={name}
-                  onChangeText={setName}
-                />
-              </View>
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>Дата и время</Text>
-                <TouchableOpacity
-                  style={styles.dateTimeContainer}
-                  onPress={showDatePicker}
-                >
-                  <SvgCalendar style={styles.calendarIcon} />
-                  <Text style={styles.dateTimeText}>{formattedDate}</Text>
-                </TouchableOpacity>
-              </View>
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <Handle />
+          <ScrollView
+            ref={scrollViewRef}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={styles.scrollViewContent}
+          >
+            <Header title="Новая трата" />
+            <View style={styles.fieldContainer}>
+              <Text style={styles.labelSum}>Сумма</Text>
+              <TextInput
+                style={styles.inputSum}
+                placeholder="Введите сумму"
+                placeholderTextColor="#a1a1a1"
+                value={amount}
+                onChangeText={setAmount}
+                keyboardType="numeric"
+              />
+            </View>
+            <View style={styles.fieldContainer}>
+              <Text style={styles.label}>Название</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Введите название"
+                placeholderTextColor="#a1a1a1"
+                value={name}
+                onChangeText={setName}
+              />
+            </View>
+            <View style={styles.fieldContainer}>
+              <Text style={styles.label}>Дата и время</Text>
+              <TouchableOpacity
+                style={styles.dateTimeContainer}
+                onPress={showDatePicker}
+              >
+                <SvgCalendar style={styles.calendarIcon} />
+                <Text style={styles.dateTimeText}>{formattedDate}</Text>
+              </TouchableOpacity>
+            </View>
+            {isDatePickerVisible && (
               <DateTimePickerModal
                 isVisible={isDatePickerVisible}
                 mode="datetime"
                 onConfirm={handleConfirmDate}
                 onCancel={hideDatePicker}
               />
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>Категория</Text>
-                <View style={styles.categoryContainer}>
-                  {categories.map((category) => (
-                    <Category
-                      key={category.id}
-                      category={category}
-                      active={selectedCategory === category.id}
-                      onPress={() => setSelectedCategory(category.id)}
-                    />
-                  ))}
-                </View>
+            )}
+            <View style={styles.fieldContainer}>
+              <Text style={styles.label}>Категория</Text>
+              <View style={styles.categoryContainer}>
+                {categories.map((category) => (
+                  <Category
+                    key={category.id}
+                    category={category}
+                    active={selectedCategory === category.id}
+                    onPress={() => handleCategoryPress(category.id)}
+                  />
+                ))}
               </View>
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>Комментарий</Text>
-                <TextInput
-                  ref={commentInputRef}
-                  style={[styles.input, styles.commentInput]}
-                  multiline
-                  placeholderTextColor="#a1a1a1"
-                  value={comment}
-                  onChangeText={setComment}
-                  onFocus={scrollToEndWithOffset} // Прокрутка до конца при фокусе
-                />
-              </View>
-              <TouchableOpacity
-                style={styles.addButton}
-                onPress={handleAddExpense}
-              >
-                <Text style={styles.addButtonText}>Добавить</Text>
-              </TouchableOpacity>
-            </ScrollView>
-          </View>
+            </View>
+            <View style={styles.fieldContainer}>
+              <Text style={styles.label}>Комментарий</Text>
+              <TextInput
+                ref={commentInputRef}
+                style={[styles.input, styles.commentInput]}
+                multiline
+                placeholderTextColor="#a1a1a1"
+                value={comment}
+                onChangeText={setComment}
+              />
+            </View>
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={handleAddExpense}
+            >
+              <Text style={styles.addButtonText}>Добавить</Text>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
-      </TouchableWithoutFeedback>
+      </View>
     </Modal>
   );
-}
+};
 
-export default React.memo(AddExpenseModal);
+export default memo(AddExpenseModal);
 
 const styles = StyleSheet.create({
   modalContainer: {
@@ -269,47 +271,6 @@ const styles = StyleSheet.create({
   categoryContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-  },
-  categoryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#979797',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 14,
-    marginRight: 8,
-    marginBottom: 8,
-  },
-  selectedCategoryButton: {
-    backgroundColor: '#d3fd51',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 14,
-    marginRight: 8,
-    marginBottom: 8,
-  },
-  categoryIcon: {
-    width: 16,
-    height: 16,
-    marginRight: 6,
-    color: 'white',
-  },
-  selectedCategoryIcon: {
-    width: 16,
-    height: 16,
-    marginRight: 6,
-    color: 'black',
-  },
-  categoryText: {
-    color: 'white',
-    fontSize: 14,
-  },
-  categoryTextSelected: {
-    color: 'black',
-    fontSize: 14,
   },
   addButton: {
     backgroundColor: '#d3fd51',

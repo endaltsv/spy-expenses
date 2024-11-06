@@ -1,6 +1,7 @@
 import { useCategoriesContext } from '@/context/CategoriesContext';
 import { Expense as ExpenseModel } from '@/models/Expense';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { memo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from 'styled-components/native';
 
@@ -11,7 +12,7 @@ interface Props {
   expense: ExpenseModel;
 }
 
-export default function ExpenseCard({
+function ExpenseCard({
   expense,
   dateVisible,
   backgroundColor,
@@ -65,6 +66,8 @@ export default function ExpenseCard({
     </View>
   );
 }
+
+export default memo(ExpenseCard);
 const styles = StyleSheet.create({
   container: {
     overflow: 'hidden',

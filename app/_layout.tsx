@@ -8,7 +8,6 @@ import { MainTheme } from '../themes';
 import { CategoryStatisticsProvider } from '@/context/CategoryStatisticsContext';
 
 export default function RootLayout() {
-  console.log('RootLayout render.');
   const isReady = useLoadFonts();
 
   if (!isReady) {

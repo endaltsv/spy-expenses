@@ -7,7 +7,6 @@ import React, { lazy, Suspense } from 'react';
 const MonthCategory = lazy(() => import('@/components/sections/MonthCategory'));
 const RecentExpense = lazy(() => import('@/components/sections/RecentExpense'));
 const SpentToday = lazy(() => import('@/components/sections/SpentToday'));
-
 export default function HomeScreen() {
   console.log('HomeScreen(index) render.');
 

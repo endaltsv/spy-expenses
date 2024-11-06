@@ -1,5 +1,4 @@
-// ExpenseModal.tsx
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 import { useTheme } from 'styled-components/native';
 import Modal from 'react-native-modal';
@@ -23,6 +22,11 @@ const ExpenseModal = ({ visible, onClose }: ExpenseModalProps) => {
   const { categories } = useCategoriesContext();
   const { expenses } = useExpensesContext();
 
+  const handleSearchChange = useCallback(
+    (text: string) => setSearchQuery(text),
+    [],
+  );
+
   return (
     <Modal
       isVisible={visible}
@@ -40,24 +44,30 @@ const ExpenseModal = ({ visible, onClose }: ExpenseModalProps) => {
         >
           <Handle />
           <TextInput
-            style={styles.searchInput}
+            style={[
+              styles.searchInput,
+              { backgroundColor: theme.colors.inputBackground },
+            ]}
             placeholder="Поиск"
-            placeholderTextColor="#6f6f6f"
+            placeholderTextColor={theme.colors.placeholderText}
             value={searchQuery}
-            onChangeText={(text) => setSearchQuery(text)}
+            onChangeText={handleSearchChange}
           />
 
-          <View style={styles.categoryContainer}>
-            <Category
-              category={categories[2]}
-              active={true}
-              closeVisible={true}
-            />
-          </View>
+          {categories[2] && (
+            <View style={styles.categoryContainer}>
+              <Category
+                category={categories[2]}
+                active={true}
+                closeVisible={true}
+              />
+            </View>
+          )}
+
           <Header title="Траты за" />
-          <Input placeholder={'5 Ноября - 10 Ноября'} active={true} />
+          <Input placeholder="5 Ноября - 10 Ноября" active={true} />
           <Header title="Сегодня" />
-          <ExpenseCard expense={expenses[0]} />
+          {expenses[0] && <ExpenseCard expense={expenses[0]} />}
         </View>
       </View>
     </Modal>
@@ -83,7 +93,6 @@ const styles = StyleSheet.create({
     marginBottom: 1,
   },
   searchInput: {
-    backgroundColor: '#333',
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 6,

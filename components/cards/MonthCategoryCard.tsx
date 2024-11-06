@@ -1,4 +1,5 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { memo } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { useTheme } from 'styled-components/native';
 
@@ -8,7 +9,7 @@ interface MonthCategoryCardProps {
   categoryTotalPurchase: number;
 }
 
-export default function MonthCategoryCard({
+function MonthCategoryCard({
   categoryName,
   categoryTotalExpense,
   categoryTotalPurchase,
@@ -35,7 +36,7 @@ export default function MonthCategoryCard({
     </View>
   );
 }
-
+export default memo(MonthCategoryCard);
 const styles = StyleSheet.create({
   card: {
     padding: 16,

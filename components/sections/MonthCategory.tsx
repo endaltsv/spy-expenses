@@ -4,14 +4,14 @@ import MonthCategoryCard from '../cards/MonthCategoryCard';
 import { useCategoriesContext } from '@/context/CategoriesContext';
 import { useExpensesContext } from '@/context/ExpensesContext';
 import moment from 'moment';
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { useCategoryStatistics } from '@/context/CategoryStatisticsContext';
 
 const { width } = Dimensions.get('window');
 const cardWidth = 176;
 const cardSpacing = 8;
 
-export default function MonthCategory() {
+function MonthCategory() {
   console.log('MonthCategory render.');
   const { getCategoryData } = useCategoryStatistics();
   const categoryData = getCategoryData('monthly');
@@ -40,7 +40,7 @@ export default function MonthCategory() {
     </View>
   );
 }
-
+export default memo(MonthCategory);
 const styles = StyleSheet.create({
   cardWrapper: {
     marginRight: cardSpacing,

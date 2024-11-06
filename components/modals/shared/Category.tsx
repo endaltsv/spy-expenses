@@ -1,20 +1,18 @@
-import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
+import React, { memo, useCallback } from 'react';
+import { Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Category as ModelCategory } from '@/models/Category';
 import SvgClose from '@/assets/images/close.svg';
+
 interface CategoryProps {
   category: ModelCategory;
   closeVisible?: boolean;
   active: boolean;
   onPress?: () => void;
 }
+
+const capitalizeFirstLetter = (text: string) =>
+  text.charAt(0).toUpperCase() + text.slice(1);
 
 const Category: React.FC<CategoryProps> = ({
   category,
@@ -23,48 +21,39 @@ const Category: React.FC<CategoryProps> = ({
   closeVisible,
 }) => {
   console.log('Category render.');
-  const capitalizeFirstLetter = (text: string) =>
-    text.charAt(0).toUpperCase() + text.slice(1);
 
   return (
-    <View>
-      <TouchableOpacity
-        style={active ? styles.selectedCategoryButton : styles.categoryButton}
-        onPress={onPress}
+    <TouchableOpacity
+      style={[styles.categoryButton, active && styles.selectedCategoryButton]}
+      onPress={onPress}
+    >
+      <MaterialCommunityIcons
+        name={category.icon}
+        size={16}
+        style={[styles.categoryIcon, active && styles.selectedCategoryIcon]}
+      />
+      <Text
+        style={[styles.categoryText, active && styles.categoryTextSelected]}
       >
-        <MaterialCommunityIcons
-          name={category.icon}
-          size={16}
-          style={active ? styles.selectedCategoryIcon : styles.categoryIcon}
-        />
-        <Text
-          style={active ? styles.categoryTextSelected : styles.categoryText}
+        {capitalizeFirstLetter(category.name)}
+      </Text>
+      {closeVisible && (
+        <TouchableOpacity
+          onPress={() => console.log('close')}
+          style={styles.closeButton}
         >
-          {capitalizeFirstLetter(category.name)}
-        </Text>
-        {closeVisible && (
-          <TouchableOpacity
-            onPress={() => console.log('close')}
-            style={{ marginLeft: 8, marginTop: 1 }}
-          >
-            <SvgClose />
-          </TouchableOpacity>
-        )}
-      </TouchableOpacity>
-    </View>
+          <SvgClose />
+        </TouchableOpacity>
+      )}
+    </TouchableOpacity>
   );
 };
 
-export default Category;
+export default memo(Category);
 
 const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  categoryContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    width: width - 40, // Adjust the width to ensure it wraps within the screen, with some padding if needed
-  },
   categoryButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -75,16 +64,10 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     marginRight: 8,
     marginBottom: 8,
+    backgroundColor: 'transparent',
   },
   selectedCategoryButton: {
     backgroundColor: '#d3fd51',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 14,
-    marginRight: 8,
-    marginBottom: 8,
   },
   categoryIcon: {
     width: 16,
@@ -93,9 +76,6 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   selectedCategoryIcon: {
-    width: 16,
-    height: 16,
-    marginRight: 6,
     color: 'black',
   },
   categoryText: {
@@ -104,6 +84,9 @@ const styles = StyleSheet.create({
   },
   categoryTextSelected: {
     color: 'black',
-    fontSize: 14,
+  },
+  closeButton: {
+    marginLeft: 8,
+    marginTop: 1,
   },
 });

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Tabs, useRouter } from 'expo-router';
 import { useTheme } from 'styled-components/native';
@@ -7,15 +7,15 @@ import TabBarSVGHome from '@/assets/tab-bar-home.svg';
 import TabBarSVGExplore from '@/assets/tab-bar-explore.svg';
 
 export default function TabLayout() {
-  console.log('TabLayout render.');
   const [modalVisible, setModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('index');
   const theme = useTheme();
   const router = useRouter();
 
-  const toggleModal = () => {
+  // Мемоизация функции для предотвращения лишних перерисовок
+  const toggleModal = useCallback(() => {
     setModalVisible((prev) => !prev);
-  };
+  }, []);
 
   const handleTabChange = (route) => {
     setActiveTab(route.name);
@@ -39,6 +39,7 @@ export default function TabLayout() {
       />
       <TouchableOpacity style={styles.addButtonArea} onPress={toggleModal} />
 
+      {/* Мемоизированный модальный компонент */}
       <AddExpenseModal visible={modalVisible} toggleModal={toggleModal} />
 
       <Tabs
@@ -71,6 +72,7 @@ export default function TabLayout() {
   );
 }
 
+// Оборачиваем AddExpenseModal в React.memo
 const styles = StyleSheet.create({
   container: {
     flex: 1,
