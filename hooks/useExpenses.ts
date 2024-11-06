@@ -8,7 +8,7 @@ import {
   deleteExpense,
 } from '../services/expensesService';
 
-const useExpenses = () => {
+export const useExpenses = () => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,6 +41,18 @@ const useExpenses = () => {
     }
   }, []);
 
+  const deleteExistingExpense = useCallback(async (id: string) => {
+    try {
+      await deleteExpense(id);
+      setExpenses((prevExpenses) =>
+        prevExpenses.filter((expense) => expense.id !== id),
+      );
+    } catch (err: any) {
+      console.error('Ошибка при удалении траты:', err);
+      setError('Ошибка при удалении траты.');
+    }
+  }, []);
+
   const updateExistingExpense = useCallback(
     async (id: string, updatedFields: Partial<Expense>) => {
       try {
@@ -62,31 +74,17 @@ const useExpenses = () => {
     [],
   );
 
-  const deleteExistingExpense = useCallback(async (id: string) => {
-    try {
-      await deleteExpense(id);
-      setExpenses((prevExpenses) =>
-        prevExpenses.filter((expense) => expense.id !== id),
-      );
-    } catch (err: any) {
-      console.error('Ошибка при удалении траты:', err);
-      setError('Ошибка при удалении траты.');
-    }
-  }, []);
-
   const refetch = useCallback(() => {
     fetchExpenses();
   }, [fetchExpenses]);
 
   return {
     expenses,
-    loading,
-    error,
+    isLoading: loading,
+    isError: error !== null,
     addNewExpense,
-    updateExistingExpense,
     deleteExistingExpense,
+    updateExistingExpense,
     refetch,
   };
 };
-
-export default useExpenses;

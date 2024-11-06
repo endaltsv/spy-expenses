@@ -1,19 +1,16 @@
 import MonthCategoryLabel from './MonthCategoryLabel';
-import { ScrollView, StyleSheet, View, Dimensions } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import MonthCategoryCard from '../cards/MonthCategoryCard';
 import { useCategoriesContext } from '@/context/CategoriesContext';
-import { useExpensesContext } from '@/context/ExpensesContext';
-import moment from 'moment';
-import { memo, useMemo } from 'react';
-import { useCategoryStatistics } from '@/context/CategoryStatisticsContext';
+import { memo } from 'react';
+import { useStatisticsContext } from '@/context/StatisticsContext';
 
-const { width } = Dimensions.get('window');
 const cardWidth = 176;
 const cardSpacing = 8;
 
 function MonthCategory() {
   console.log('MonthCategory render.');
-  const { getCategoryData } = useCategoryStatistics();
+  const { getCategoryData } = useStatisticsContext();
   const categoryData = getCategoryData('monthly');
 
   return (

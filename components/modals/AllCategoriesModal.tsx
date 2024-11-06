@@ -11,7 +11,7 @@ import Handle from './shared/Handle';
 import Header from '../ui/Header';
 import MonthCategoryCard from '../cards/MonthCategoryCard';
 import NewCategoryCard from '../cards/NewCategoryCard';
-import { useCategoryStatistics } from '@/context/CategoryStatisticsContext';
+import { useStatisticsContext } from '@/context/StatisticsContext';
 
 interface ExpenseModalProps {
   visible: boolean;
@@ -22,7 +22,7 @@ const AllCategoriesModal = ({ visible, onClose }: ExpenseModalProps) => {
   console.log('AllCategoriesModal render.');
   const theme = useTheme();
 
-  const { getCategoryData } = useCategoryStatistics();
+  const { getCategoryData } = useStatisticsContext();
   const categoryData = getCategoryData('all');
 
   const screenWidth = Dimensions.get('window').width;

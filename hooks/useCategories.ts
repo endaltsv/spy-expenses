@@ -1,16 +1,15 @@
 // src/hooks/useCategories.ts
 import { useState, useEffect, useCallback } from 'react';
-import { Category } from '@/models/Category';
+import { Category } from '../models/Category';
 import {
   addCategory,
   getAllCategories,
   updateCategory,
   deleteCategory,
-  clearAllCategories,
   initializeDefaultCategories,
-} from '@/services/categoriesService';
+} from '../services/categoriesService';
 
-const useCategories = () => {
+export const useCategories = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -80,19 +79,25 @@ const useCategories = () => {
     }
   }, []);
 
+  const findCategoryById = useCallback(
+    (id: string): Category | undefined => {
+      return categories.find((category) => category.id === id);
+    },
+    [categories],
+  );
+
   const refetch = useCallback(() => {
     fetchCategories();
   }, [fetchCategories]);
 
   return {
     categories,
-    loading,
-    error,
+    isLoading: loading,
+    isError: error !== null,
     addNewCategory,
     updateExistingCategory,
     deleteExistingCategory,
     refetch,
+    findCategoryById,
   };
 };
-
-export default useCategories;

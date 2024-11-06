@@ -5,7 +5,7 @@ import { CategoriesProvider } from '@/context/CategoriesContext';
 import { ThemeProvider } from 'styled-components/native';
 import useLoadFonts from '@/hooks/useLoadFonts';
 import { MainTheme } from '../themes';
-import { CategoryStatisticsProvider } from '@/context/CategoryStatisticsContext';
+import { StatisticsProvider } from '@/context/StatisticsContext';
 
 export default function RootLayout() {
   const isReady = useLoadFonts();
@@ -16,18 +16,18 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider theme={MainTheme}>
-      <CategoriesProvider>
-        <ExpensesProvider>
-          <CategoryStatisticsProvider>
+      <ExpensesProvider>
+        <CategoriesProvider>
+          <StatisticsProvider>
             <GestureHandlerRootView>
               <Stack>
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 <Stack.Screen name="+not-found" />
               </Stack>
             </GestureHandlerRootView>
-          </CategoryStatisticsProvider>
-        </ExpensesProvider>
-      </CategoriesProvider>
+          </StatisticsProvider>
+        </CategoriesProvider>
+      </ExpensesProvider>
     </ThemeProvider>
   );
 }

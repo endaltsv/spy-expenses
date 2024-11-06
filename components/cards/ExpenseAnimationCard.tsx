@@ -1,4 +1,4 @@
-import React, { memo, useState, useMemo, useCallback } from 'react';
+import { memo, useState, useMemo, useCallback } from 'react';
 import formattingNumber from '@/utils/formattingNumber';
 import {
   View,
@@ -6,7 +6,6 @@ import {
   StyleSheet,
   useWindowDimensions,
   TouchableOpacity,
-  Image,
 } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {

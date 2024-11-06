@@ -1,4 +1,4 @@
-import React, { memo, useState, useRef, useCallback } from 'react';
+import { memo, useState, useCallback } from 'react';
 import {
   TouchableOpacity,
   StyleSheet,
@@ -26,9 +26,6 @@ const AddExpenseModal = ({ visible, toggleModal }: AddExpenseModalProps) => {
   console.log('AddExpenseModal render.');
   const { addExpense } = useExpensesContext();
   const { categories } = useCategoriesContext();
-
-  const scrollViewRef = useRef<ScrollView>(null);
-  const commentInputRef = useRef<TextInput>(null);
 
   const [name, setName] = useState<string>('');
   const [amount, setAmount] = useState<string>('');
@@ -59,7 +56,7 @@ const AddExpenseModal = ({ visible, toggleModal }: AddExpenseModalProps) => {
       Alert.alert('Ошибка', 'Пожалуйста, введите корректную сумму.');
       return;
     }
-
+    console.log('ok');
     const newExpense = {
       name: name.trim(),
       amount: parsedAmount,
@@ -106,10 +103,8 @@ const AddExpenseModal = ({ visible, toggleModal }: AddExpenseModalProps) => {
         <View style={styles.modalContent}>
           <Handle />
           <ScrollView
-            ref={scrollViewRef}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
-            contentContainerStyle={styles.scrollViewContent}
           >
             <Header title="Новая трата" />
             <View style={styles.fieldContainer}>
@@ -167,7 +162,6 @@ const AddExpenseModal = ({ visible, toggleModal }: AddExpenseModalProps) => {
             <View style={styles.fieldContainer}>
               <Text style={styles.label}>Комментарий</Text>
               <TextInput
-                ref={commentInputRef}
                 style={[styles.input, styles.commentInput]}
                 multiline
                 placeholderTextColor="#a1a1a1"
@@ -206,9 +200,6 @@ const styles = StyleSheet.create({
     paddingRight: 26,
     paddingBottom: 16,
     marginBottom: 1,
-  },
-  scrollViewContent: {
-    paddingBottom: '95%',
   },
   fieldContainer: {
     marginTop: 22,
