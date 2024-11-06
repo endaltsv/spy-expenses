@@ -17,6 +17,7 @@ export default function ExpenseCard({
   backgroundColor,
   paddingHorizontal,
 }: Props) {
+  console.log('ExpenseCard render.');
   const theme = useTheme();
 
   const { findCategoryById } = useCategoriesContext();

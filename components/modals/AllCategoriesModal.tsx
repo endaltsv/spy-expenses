@@ -1,4 +1,3 @@
-import React, { useState, useMemo } from 'react';
 import {
   View,
   StyleSheet,
@@ -9,12 +8,10 @@ import {
 import { useTheme } from 'styled-components/native';
 import Modal from 'react-native-modal';
 import Handle from './shared/Handle';
-import { useCategoriesContext } from '@/context/CategoriesContext';
 import Header from '../ui/Header';
-import { useExpensesContext } from '@/context/ExpensesContext';
 import MonthCategoryCard from '../cards/MonthCategoryCard';
-import moment from 'moment';
 import NewCategoryCard from '../cards/NewCategoryCard';
+import { useCategoryStatistics } from '@/context/CategoryStatisticsContext';
 
 interface ExpenseModalProps {
   visible: boolean;
@@ -22,43 +19,14 @@ interface ExpenseModalProps {
 }
 
 const AllCategoriesModal = ({ visible, onClose }: ExpenseModalProps) => {
+  console.log('AllCategoriesModal render.');
   const theme = useTheme();
-  const [searchQuery, setSearchQuery] = useState('');
-  const { categories } = useCategoriesContext();
-  const { expenses } = useExpensesContext();
 
-  const currentMonth = moment().month();
-  const currentYear = moment().year();
-
-  const categoryData = useMemo(() => {
-    const currentMonthExpenses = expenses.filter((expense) => {
-      const expenseDate = moment(expense.dateTime);
-      return (
-        expenseDate.month() === currentMonth &&
-        expenseDate.year() === currentYear
-      );
-    });
-
-    return categories
-      .map((category) => {
-        const categoryExpenses = currentMonthExpenses.filter(
-          (expense) => expense.categoryId === category.id,
-        );
-
-        return {
-          ...category,
-          totalAmount: categoryExpenses.reduce(
-            (sum, expense) => sum + expense.amount,
-            0,
-          ),
-          totalPurchases: categoryExpenses.length,
-        };
-      })
-      .sort((a, b) => b.totalAmount - a.totalAmount);
-  }, [categories, expenses, currentMonth, currentYear]);
+  const { getCategoryData } = useCategoryStatistics();
+  const categoryData = getCategoryData('all');
 
   const screenWidth = Dimensions.get('window').width;
-  const cardWidth = (screenWidth - 64) / 2; // 72 = (24 padding left + 24 padding right + 16 межкарточный отступ)
+  const cardWidth = (screenWidth - 64) / 2;
 
   return (
     <Modal

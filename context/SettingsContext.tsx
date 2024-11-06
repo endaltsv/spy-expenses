@@ -17,6 +17,7 @@ const SettingsContext = createContext<SettingsContextProps | undefined>(
 export const SettingsProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
+  console.log('SettingsProvider render.');
   const { settings, loading, error, updateSettings } = useSettings();
 
   return (

@@ -27,6 +27,8 @@ const ExpensesContext = createContext<ExpensesContextProps | undefined>(
 export const ExpensesProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
+  console.log('ExpensesProvider render.');
+
   const { expenses, addNewExpense, deleteExistingExpense } = useExpenses();
 
   // Функция для вычисления общей суммы расходов

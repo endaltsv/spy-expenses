@@ -24,6 +24,8 @@ const CategoriesContext = createContext<CategoriesContextProps | undefined>(
 export const CategoriesProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
+  console.log('CategoriesProvider render.');
+
   const {
     categories,
     loading,

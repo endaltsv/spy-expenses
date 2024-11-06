@@ -17,6 +17,7 @@ interface ExpenseModalProps {
 }
 
 const ExpenseModal = ({ visible, onClose }: ExpenseModalProps) => {
+  console.log('ExpenseModal render.');
   const theme = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const { categories } = useCategoriesContext();

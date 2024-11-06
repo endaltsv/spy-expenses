@@ -7,8 +7,9 @@ import TabBarSVGHome from '@/assets/tab-bar-home.svg';
 import TabBarSVGExplore from '@/assets/tab-bar-explore.svg';
 
 export default function TabLayout() {
+  console.log('TabLayout render.');
   const [modalVisible, setModalVisible] = useState(false);
-  const [activeTab, setActiveTab] = useState('index'); // Начальное состояние - 'index'
+  const [activeTab, setActiveTab] = useState('index');
   const theme = useTheme();
   const router = useRouter();
 
@@ -16,7 +17,6 @@ export default function TabLayout() {
     setModalVisible((prev) => !prev);
   };
 
-  // Обработчик изменения вкладки
   const handleTabChange = (route) => {
     setActiveTab(route.name);
   };

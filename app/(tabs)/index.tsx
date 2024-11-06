@@ -9,10 +9,9 @@ const RecentExpense = lazy(() => import('@/components/sections/RecentExpense'));
 const SpentToday = lazy(() => import('@/components/sections/SpentToday'));
 
 export default function HomeScreen() {
-  const theme = useTheme();
-
-  console.log('theme:', theme);
   console.log('HomeScreen(index) render.');
+
+  const theme = useTheme();
 
   return (
     <Suspense fallback={<LoadingAnimation />}>

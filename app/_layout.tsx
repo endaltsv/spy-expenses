@@ -2,10 +2,10 @@ import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ExpensesProvider } from '@/context/ExpensesContext';
 import { CategoriesProvider } from '@/context/CategoriesContext';
-import { SettingsProvider } from '@/context/SettingsContext';
 import { ThemeProvider } from 'styled-components/native';
 import useLoadFonts from '@/hooks/useLoadFonts';
 import { MainTheme } from '../themes';
+import { CategoryStatisticsProvider } from '@/context/CategoryStatisticsContext';
 
 export default function RootLayout() {
   console.log('RootLayout render.');
@@ -19,13 +19,14 @@ export default function RootLayout() {
     <ThemeProvider theme={MainTheme}>
       <CategoriesProvider>
         <ExpensesProvider>
-          <GestureHandlerRootView>
-            <Stack>
-              <Stack.Screen name="index" />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-            </Stack>
-          </GestureHandlerRootView>
+          <CategoryStatisticsProvider>
+            <GestureHandlerRootView>
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+              </Stack>
+            </GestureHandlerRootView>
+          </CategoryStatisticsProvider>
         </ExpensesProvider>
       </CategoriesProvider>
     </ThemeProvider>

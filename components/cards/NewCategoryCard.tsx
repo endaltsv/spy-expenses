@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useTheme } from 'styled-components/native';
 
 export default function NewCategoryCard() {
+  console.log('NewCategoryCard render.');
   const theme = useTheme();
   return (
     <View style={[styles.card, { backgroundColor: theme.colors.secondary }]}>

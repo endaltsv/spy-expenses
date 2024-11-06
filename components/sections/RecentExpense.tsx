@@ -7,10 +7,10 @@ import { useCategoriesContext } from '@/context/CategoriesContext';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const RecentExpense = () => {
+  console.log('RecentExpense render.');
+
   const { getLastFourExpenses, deleteExpense } = useExpensesContext();
   const { findCategoryById } = useCategoriesContext();
-
-  console.log('RecentExpense render.');
 
   const expenses = getLastFourExpenses;
   const expenseCards = useMemo(
@@ -19,15 +19,16 @@ const RecentExpense = () => {
         const category = findCategoryById(expense.categoryId);
         const expenseIcon = category ? category.icon : undefined;
 
-        // Memoize the delete handler
         const handleDelete = () => {
           deleteExpense(expense.id);
         };
 
         return (
-          <TouchableOpacity onPress={() => console.log(expense.id)}>
+          <TouchableOpacity
+            key={expense.id}
+            onPress={() => console.log(expense.id)}
+          >
             <ExpenseAnimationCard
-              key={expense.id}
               expenseName={expense.name}
               expenseAmount={expense.amount}
               expenseDate={expense.dateTime}

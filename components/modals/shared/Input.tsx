@@ -17,6 +17,7 @@ export default function Input({
   active,
   setAmount,
 }: Props) {
+  console.log('Input render.');
   return (
     <TouchableOpacity onPress={() => console.log('123')}>
       <View

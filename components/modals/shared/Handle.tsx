@@ -1,6 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 
 export default function Handle() {
+  console.log('Handle render.');
   return <View style={styles.handle} />;
 }
 

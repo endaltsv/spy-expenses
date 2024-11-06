@@ -22,6 +22,7 @@ const Category: React.FC<CategoryProps> = ({
   onPress,
   closeVisible,
 }) => {
+  console.log('Category render.');
   const capitalizeFirstLetter = (text: string) =>
     text.charAt(0).toUpperCase() + text.slice(1);
 

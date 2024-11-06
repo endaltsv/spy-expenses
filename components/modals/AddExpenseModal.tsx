@@ -24,6 +24,7 @@ interface AddExpenseModalProps {
 }
 
 function AddExpenseModal({ visible, toggleModal }: AddExpenseModalProps) {
+  console.log('AddExpenseModal render.');
   const { addExpense } = useExpensesContext();
   const { categories } = useCategoriesContext();
 
